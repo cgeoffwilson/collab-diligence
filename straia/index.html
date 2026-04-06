@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ============================================================ -->
+<!-- PASSWORD PROTECTION — TO REMOVE: DELETE FROM HERE...         -->
+<script>
+(function() {
+  const CORRECT = 'collabfund';
+  const GRANTED = 'straia_access_granted';
+  if (sessionStorage.getItem(GRANTED) !== '1') {
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.style.display = 'none';
+    });
+    var pwd = prompt('Enter password to access this document:');
+    if (pwd === CORRECT) {
+      sessionStorage.setItem(GRANTED, '1');
+    } else {
+      document.write('<div style="background:#0d0e0c;color:#565840;font-family:monospace;height:100vh;display:flex;align-items:center;justify-content:center;font-size:14px;">Access denied.</div>');
+      document.close();
+    }
+  }
+})();
+</script>
+<!-- ...TO HERE (and the blank line below)                        -->
+<!-- ============================================================ -->
+<title>Straia · Seed Diligence Review</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=Newsreader:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0e0c;
+    --surface: #141510;
+    --surface2: #1c1e17;
+    --border: #2a2c22;
+    --border-light: #3a3d2e;
+    --text: #e8ede0;
+    --text-muted: #90957a;
+    --text-dim: #565840;
+    --accent: #c8f23a;
+    --accent-dim: rgba(200,242,58,0.12);
+    --accent-dim2: rgba(200,242,58,0.06);
+    --red: #ff5c3a;
+    --red-dim: rgba(255,92,58,0.12);
+    --yellow: #f5c842;
+    --yellow-dim: rgba(245,200,66,0.1);
+    --blue: #6ab5ff;
+    --blue-dim: rgba(106,181,255,0.1);
+    --orange: #ff8c42;
+    --orange-dim: rgba(255,140,66,0.1);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,14,12,0.94);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px; color: #000;
+    flex-shrink: 0;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+  .header-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+  .header-sub { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border: 1px solid;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
+  }
+  .badge-green { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  .badge-yellow { border-color: var(--yellow); color: var(--yellow); background: var(--yellow-dim); }
+  .badge-red { border-color: var(--red); color: var(--red); background: var(--red-dim); }
+  .badge-blue { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+  .badge-orange { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+
+  /* NAV TABS */
+  .nav {
+    display: flex; gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    padding: 14px 24px;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 500;
+    color: var(--text-dim); cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all 0.2s; white-space: nowrap; border-right: 1px solid var(--border);
+  }
+  .nav-tab:hover { color: var(--text-muted); background: var(--surface2); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); background: var(--surface2); }
+
+  /* LAYOUT */
+  .container { max-width: 1200px; margin: 0 auto; padding: 32px 40px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* KPI STRIP */
+  .kpi-strip {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    border: 1px solid var(--border); margin-bottom: 32px;
+  }
+  .kpi {
+    padding: 20px 24px; border-right: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .kpi:last-child { border-right: none; }
+  .kpi::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: var(--accent); opacity: 0.4;
+  }
+  .kpi-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+  .kpi-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 4px; }
+  .kpi-sub { font-size: 10px; color: var(--text-muted); }
+  .kpi-accent .kpi-value { color: var(--accent); }
+  .kpi-yellow .kpi-value { color: var(--yellow); }
+  .kpi-red .kpi-value { color: var(--red); }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+  /* CARD */
+  .card {
+    border: 1px solid var(--border); background: var(--surface);
+    padding: 24px; margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  /* SECTION TOGGLE */
+  .section {
+    border: 1px solid var(--border); margin-bottom: 8px;
+    background: var(--surface);
+  }
+  .section-header {
+    padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; transition: background 0.15s; user-select: none;
+  }
+  .section-header:hover { background: var(--surface2); }
+  .section-title {
+    font-size: 12px; font-weight: 500; color: var(--text);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-chevron {
+    font-size: 10px; color: var(--text-dim); transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .section.open .section-chevron { transform: rotate(90deg); }
+  .section-body {
+    display: none; padding: 0 20px 20px; border-top: 1px solid var(--border);
+    font-family: 'Newsreader', serif; font-size: 14px; line-height: 1.85; color: var(--text-muted);
+  }
+  .section-body p { margin-top: 14px; }
+  .section-body strong { color: var(--text); font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 500; }
+  .section.open .section-body { display: block; }
+  .expand-btns { display: flex; gap: 8px; margin-bottom: 12px; }
+  .expand-btn {
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-dim); cursor: pointer; padding: 4px 8px;
+    border: 1px solid var(--border); background: none; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .expand-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* TABLE */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 11px; }
+  .tbl th {
+    text-align: left; padding: 8px 12px;
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-dim); border-bottom: 1px solid var(--border); font-weight: 500;
+  }
+  .tbl td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tr:hover td { background: var(--surface2); }
+  .tbl .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .tbl .strong td { color: var(--text); font-weight: 500; background: var(--surface2); }
+  .tbl .accent td { color: var(--accent); }
+
+  /* SCORE BAR */
+  .score-grid { display: flex; flex-direction: column; gap: 10px; }
+  .score-row { display: grid; grid-template-columns: 160px 1fr 36px; align-items: center; gap: 12px; }
+  .score-label { font-size: 11px; color: var(--text-muted); }
+  .score-track { height: 4px; background: var(--border); position: relative; }
+  .score-bar {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .score-val { font-size: 10px; text-align: right; color: var(--text-dim); }
+
+  /* RISK HEATMAP */
+  .risk-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 20px; }
+  .risk-cell {
+    padding: 12px 10px; text-align: center; border: 1px solid var(--border);
+    font-size: 10px; line-height: 1.4; cursor: default;
+    transition: all 0.2s;
+  }
+  .risk-cell:hover { transform: scale(1.04); z-index: 1; position: relative; }
+  .risk-low { background: rgba(200,242,58,0.08); border-color: rgba(200,242,58,0.2); color: var(--accent); }
+  .risk-med { background: rgba(245,200,66,0.08); border-color: rgba(245,200,66,0.2); color: var(--yellow); }
+  .risk-high { background: rgba(255,92,58,0.08); border-color: rgba(255,92,58,0.2); color: var(--red); }
+  .risk-label { margin-top: 4px; color: var(--text-muted); font-size: 9px; letter-spacing: 0.06em; }
+
+  /* PIPELINE TABLE */
+  .stage-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  .stage-procurement { background: var(--accent); }
+  .stage-proposal { background: var(--blue); }
+  .stage-qualified { background: var(--yellow); }
+  .stage-discovery { background: var(--orange); }
+  .stage-lead { background: var(--text-dim); }
+
+  /* MEMO */
+  .memo { background: var(--surface); border: 1px solid var(--border); max-width: 760px; margin: 0 auto; }
+  .memo-header { padding: 32px 40px 24px; border-bottom: 1px solid var(--border); }
+  .memo-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 20px; }
+  .memo-meta { display: grid; grid-template-columns: auto 1fr; gap: 4px 20px; font-size: 12px; }
+  .memo-meta-key { color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; font-size: 10px; padding-top: 2px; }
+  .memo-meta-val { color: var(--text-muted); }
+  .memo-body { padding: 32px 40px; }
+  .memo-section-title {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);
+    margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .memo-section-title:first-child { margin-top: 0; }
+  .memo-prose { font-family: 'Newsreader', serif; font-size: 15px; line-height: 1.85; color: #9fa88a; }
+  .memo-prose p { margin-bottom: 14px; }
+  .memo-prose strong { color: var(--text); }
+  .memo-list { margin: 8px 0 14px; padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .memo-list li { font-family: 'Newsreader', serif; font-size: 15px; line-height: 1.7; color: #9fa88a; padding-left: 18px; position: relative; }
+  .memo-list li::before { content: '—'; position: absolute; left: 0; color: var(--text-dim); }
+  .memo-verdict { margin-top: 24px; padding: 20px 24px; background: var(--accent-dim2); border: 1px solid var(--accent); border-left: 4px solid var(--accent); }
+  .memo-verdict-title { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .memo-verdict-body { font-family: 'Newsreader', serif; font-size: 15px; line-height: 1.8; color: #b0ba96; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  /* TEAM CARD */
+  .team-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .team-card { border: 1px solid var(--border); padding: 20px; background: var(--surface2); }
+  .team-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .team-role { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .team-bio { font-family: 'Newsreader', serif; font-size: 13px; line-height: 1.7; color: var(--text-muted); }
+  .team-highlight { margin-top: 10px; padding: 8px 12px; background: var(--accent-dim2); border-left: 2px solid var(--accent); font-size: 11px; color: var(--text-muted); }
+
+  /* CHART */
+  .chart-wrap { position: relative; height: 180px; margin: 8px 0 24px; }
+  .chart-bars { display: flex; align-items: flex-end; gap: 4px; height: 160px; position: absolute; left: 40px; right: 0; bottom: 24px; }
+  .chart-bar-group { flex: 1; display: flex; align-items: flex-end; gap: 2px; }
+  .chart-bar { flex: 1; transition: opacity 0.2s; cursor: default; min-width: 4px; }
+  .chart-bar:hover { opacity: 0.8; }
+  .chart-bar-label { position: absolute; bottom: 0; left: 40px; right: 0; display: flex; justify-content: space-between; font-size: 9px; color: var(--text-dim); }
+  .chart-yaxis { position: absolute; left: 0; top: 0; bottom: 24px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; width: 36px; font-size: 9px; color: var(--text-dim); }
+  .chart-legend { display: flex; gap: 16px; margin-top: 8px; font-size: 10px; color: var(--text-muted); }
+  .legend-dot { display: inline-block; width: 8px; height: 8px; margin-right: 5px; vertical-align: middle; }
+
+  /* SAFE TABLE */
+  .safe-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .safe-row:last-child { border-bottom: none; }
+  .safe-investor { font-size: 12px; color: var(--text); }
+  .safe-amount { font-size: 12px; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .safe-cap { font-size: 11px; color: var(--text-dim); }
+
+  /* HIGHLIGHT BOX */
+  .highlight { padding: 16px 20px; border-left: 3px solid var(--accent); background: var(--accent-dim2); margin: 16px 0; font-size: 12px; color: var(--text-muted); }
+  .highlight strong { color: var(--text); display: block; margin-bottom: 4px; }
+  .warn { border-left-color: var(--yellow); background: var(--yellow-dim); }
+  .warn-red { border-left-color: var(--red); background: var(--red-dim); }
+
+  @media (max-width: 768px) {
+    .container { padding: 20px 16px; }
+    .header { padding: 12px 16px; }
+    .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+    .grid-2, .grid-3, .team-grid { grid-template-columns: 1fr; }
+    .risk-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo-mark">S</div>
+    <div>
+      <div class="header-title">Straia</div>
+      <div class="header-sub">Seed Diligence · April 2026</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <span class="badge badge-green">● Strong Traction</span>
+    <span class="badge badge-yellow">⚠ Seed Stage</span>
+    <span class="badge badge-blue">Intro: Emily Bennett / a16z</span>
+  </div>
+</div>
+
+<div class="nav">
+  <div class="nav-tab active" onclick="switchTab('overview')">Overview</div>
+  <div class="nav-tab" onclick="switchTab('team')">Team</div>
+  <div class="nav-tab" onclick="switchTab('gtm')">GTM & Pipeline</div>
+  <div class="nav-tab" onclick="switchTab('financials')">Financials</div>
+  <div class="nav-tab" onclick="switchTab('risks')">Risk Register</div>
+  <div class="nav-tab" onclick="switchTab('memo')">Investment Memo</div>
+</div>
+
+<!-- ─── OVERVIEW ─── -->
+<div id="tab-overview" class="tab-content active">
+<div class="container">
+
+  <div class="kpi-strip">
+    <div class="kpi kpi-accent">
+      <div class="kpi-label">Current ARR</div>
+      <div class="kpi-value">$675K</div>
+      <div class="kpi-sub">3 weeks post-launch</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Raise Size</div>
+      <div class="kpi-value">$5–7M</div>
+      <div class="kpi-sub">Seed round</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Weighted Pipeline</div>
+      <div class="kpi-value">$9.2M</div>
+      <div class="kpi-sub">Net ARR weighted</div>
+    </div>
+    <div class="kpi kpi-yellow">
+      <div class="kpi-label">TBR Contract</div>
+      <div class="kpi-value">$4.5M</div>
+      <div class="kpi-sub">36 college system · TN</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Pre-Seed Raised</div>
+      <div class="kpi-value">$1.37M</div>
+      <div class="kpi-sub">SAFEs · $5M–$12M caps</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">Company Snapshot</div>
+      <table class="tbl">
+        <tr><td style="color:var(--text-dim);width:120px">Company</td><td>Straia, Inc. (fka ClassBridge)</td></tr>
+        <tr><td style="color:var(--text-dim)">Founded</td><td>November 2024 (DE Corp)</td></tr>
+        <tr><td style="color:var(--text-dim)">HQ</td><td>San Francisco, CA</td></tr>
+        <tr><td style="color:var(--text-dim)">Category</td><td>Agentic AI · Higher Education</td></tr>
+        <tr><td style="color:var(--text-dim)">Stage</td><td>Seed · First institutional raise</td></tr>
+        <tr><td style="color:var(--text-dim)">Intro Source</td><td>Emily Bennett, a16z Speedrun</td></tr>
+        <tr><td style="color:var(--text-dim)">Meeting</td><td>Early April 2026, SF (Collab/Craig)</td></tr>
+        <tr><td style="color:var(--text-dim)">Headcount</td><td>4 founders + 2 engineers (now)</td></tr>
+        <tr><td style="color:var(--text-dim)">Pre-Seed Investors</td><td>a16z Speedrun, JFF Ventures, Reach Capital</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">What Straia Does</div>
+      <div style="font-family:'Newsreader',serif;font-size:14px;line-height:1.85;color:var(--text-muted);">
+        <p>Straia is the agentic AI platform for higher education administration. It integrates with legacy systems of record — SIS (Banner, Colleague, Workday), LMS (Canvas, Blackboard, D2L), and CRM (Element451, Slate, EAB) — to create a unified data layer that allows any administrator to query, visualize, and act on institutional data in real time, without writing SQL or waiting weeks for institutional research.</p>
+        <p>The GTM wedge is a <strong>dual-track motion</strong>: sell both individual institutions (bottom-up) and state system leadership (top-down) simultaneously, then expand system-wide with minimal incremental integration work.</p>
+        <p>Their procurement hack: onboarding with <strong>Carahsoft</strong> to get listed on E&I cooperative buying contracts — bypassing the 6–12 month public RFP process entirely.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Collab Thesis Fit</div>
+    <div class="grid-3" style="margin-top:0;gap:12px;">
+      <div class="highlight">
+        <strong>Good for You</strong>
+        Community colleges — the institutions that serve as the first rung of opportunity for millions. Ryan's own origin story (parents met at a community college in Indiana) is the thesis personified.
+      </div>
+      <div class="highlight">
+        <strong>Good for the World</strong>
+        Demographic cliff + funding cuts + admin bloat = existential crisis for community colleges. Straia equips these institutions to do more with less and improve student outcomes at scale.
+      </div>
+      <div class="highlight">
+        <strong>Venture Outcome</strong>
+        $425M state-network beachhead → $2.25B with 4-year colleges → $12.5B international. System-level selling creates compounding velocity. Procurement moat via Carahsoft/E&I contracts.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Diligence Scorecard</div>
+    <div class="score-grid">
+      <div class="score-row">
+        <div class="score-label">Founding Team</div>
+        <div class="score-track"><div class="score-bar" style="width:90%;background:var(--accent)"></div></div>
+        <div class="score-val" style="color:var(--accent)">9/10</div>
+      </div>
+      <div class="score-row">
+        <div class="score-label">Customer Validation</div>
+        <div class="score-track"><div class="score-bar" style="width:92%;background:var(--accent)"></div></div>
+        <div class="score-val" style="color:var(--accent)">9.5/10</div>
+      </div>
+      <div class="score-row">
+        <div class="score-label">GTM Strategy</div>
+        <div class="score-track"><div class="score-bar" style="width:85%;background:var(--accent)"></div></div>
+        <div class="score-val" style="color:var(--accent)">8.5/10</div>
+      </div>
+      <div class="score-row">
+        <div class="score-label">Market Opportunity</div>
+        <div class="score-track"><div class="score-bar" style="width:80%;background:var(--blue)"></div></div>
+        <div class="score-val" style="color:var(--blue)">8/10</div>
+      </div>
+      <div class="score-row">
+        <div class="score-label">Product Differentiation</div>
+        <div class="score-track"><div class="score-bar" style="width:80%;background:var(--blue)"></div></div>
+        <div class="score-val" style="color:var(--blue)">8/10</div>
+      </div>
+      <div class="score-row">
+        <div class="score-label">Financial Model</div>
+        <div class="score-track"><div class="score-bar" style="width:65%;background:var(--yellow)"></div></div>
+        <div class="score-val" style="color:var(--yellow)">6.5/10</div>
+      </div>
+      <div class="score-row">
+        <div class="score-label">Competitive Moat</div>
+        <div class="score-track"><div class="score-bar" style="width:70%;background:var(--yellow)"></div></div>
+        <div class="score-val" style="color:var(--yellow)">7/10</div>
+      </div>
+      <div class="score-row">
+        <div class="score-label">Stage / Risk Profile</div>
+        <div class="score-track"><div class="score-bar" style="width:55%;background:var(--orange)"></div></div>
+        <div class="score-val" style="color:var(--orange)">5.5/10</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ─── TEAM ─── -->
+<div id="tab-team" class="tab-content">
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">Founding Team</div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-name">Ryan Lau</div>
+        <div class="team-role">CEO & Co-Founder</div>
+        <div class="team-bio">Investment banking at Lazard (software M&A), then PE at Riverside Company investing in edtech. Earned Wharton MBA, then spent 6 months cold-calling ~3,000 colleges before founding Straia. Lived on the Roane State campus for 3 months during customer discovery. Previously scaled a virtual tutoring startup from $0 to $5M ARR during COVID.
+        </div>
+        <div class="team-highlight">Assembled ~$10M pipeline with zero GTM spend. Parents met at a community college — mission is personal.</div>
+      </div>
+      <div class="team-card">
+        <div class="team-name">Gautam Narasimhan</div>
+        <div class="team-role">COO & Co-Founder</div>
+        <div class="team-bio">Bain & Co consultant → YouTube strategy & ops → PE at Advent International (consumer tech & interactive entertainment). Wharton MBA → joined Sana (Swedish enterprise AI, analogous to Glean) as early US commercial hire. Helped grow US team from &lt;10 to ~90 in 6 months; stayed through $1.1B acquisition by Workday in late 2025.
+        </div>
+        <div class="team-highlight">Owns commercial strategy and post-sales deployment — the two hardest parts of selling into higher ed.</div>
+      </div>
+      <div class="team-card">
+        <div class="team-name">Alan Chan</div>
+        <div class="team-role">CTO & Co-Founder</div>
+        <div class="team-bio">Built real-time data pipelines at Skillz powering segmentation for 30M users (contributed to $3.5B IPO). Architected live sports ingestion at GreenPark Sports (acq. by JOA). Built payment infra routing $9.6B+ annually at Opendoor. Most recently founding engineer at EyeTell (multimodal AI).
+        </div>
+        <div class="team-highlight">Deep infra pedigree at scale — exactly what complex legacy SIS/LMS integrations demand.</div>
+      </div>
+      <div class="team-card">
+        <div class="team-name">Nikki Dansey</div>
+        <div class="team-role">CPO & Co-Founder</div>
+        <div class="team-bio">UC Berkeley CS. Co-founded SageSpot as CTO (Khosla-backed), led 8-person eng team. First hire at Arcus (Head of Product Eng, data/AI — acquired by Addepar). Then The Trade Desk building Kokai, a ground-up rebuild of programmatic media buying at scale.
+        </div>
+        <div class="team-highlight">Specialty: building hyper-technical products for non-technical users. Exactly the Straia challenge.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Advisors</div>
+    <table class="tbl">
+      <thead><tr><th>Name</th><th>Role</th><th>Relevance</th></tr></thead>
+      <tbody>
+        <tr><td>Drew Allen</td><td>Head of Data Analytics, Harvard University</td><td>End-user credibility; institutional intelligence insider</td></tr>
+        <tr><td>Terrence Cheng</td><td>Chancellor, CT Community College System</td><td>System-level sales champion; TBR analogue for Northeast expansion</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Team Assessment</div>
+    <table class="tbl">
+      <thead><tr><th>Dimension</th><th>Signal</th><th>Rating</th></tr></thead>
+      <tbody>
+        <tr><td>Domain expertise</td><td>Ryan: edtech investing + operations; Gautam: enterprise AI deployment</td><td><span class="badge badge-green">Strong</span></td></tr>
+        <tr><td>Technical depth</td><td>Alan: infra at IPO-scale; Nikki: ML product for non-technical users</td><td><span class="badge badge-green">Strong</span></td></tr>
+        <tr><td>Customer obsession</td><td>3 months living on campus; 3,000 cold calls; built integrations before raising</td><td><span class="badge badge-green">Exceptional</span></td></tr>
+        <tr><td>Commercial instinct</td><td>$675K ARR in 3 weeks; $10M pipeline with $0 GTM spend</td><td><span class="badge badge-green">Strong</span></td></tr>
+        <tr><td>Mission alignment</td><td>Ryan's personal origin story matches customer archetype precisely</td><td><span class="badge badge-green">Authentic</span></td></tr>
+        <tr><td>First-time CEO risk</td><td>Ryan young; Gautam has operating / commercial seasoning but also first startup</td><td><span class="badge badge-yellow">Monitor</span></td></tr>
+        <tr><td>Equity distribution</td><td>Ryan 36%, Gautam 13.5%, Alan 31.5%, Nikki 9.1% — Ryan-heavy but defensible</td><td><span class="badge badge-yellow">Acceptable</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Cap Table Summary</div>
+    <table class="tbl">
+      <thead><tr><th>Stakeholder</th><th class="num">Common Shares</th><th class="num">Fully Diluted %</th></tr></thead>
+      <tbody>
+        <tr><td>Ryan Lau (CEO)</td><td class="num">4,124,149</td><td class="num" style="color:var(--accent)">36.0%</td></tr>
+        <tr><td>Alan Chan (CTO)</td><td class="num">3,608,631</td><td class="num">31.5%</td></tr>
+        <tr><td>Gautam Narasimhan (COO)</td><td class="num">1,546,556</td><td class="num">13.5%</td></tr>
+        <tr><td>Nikki Dansey (CPO)</td><td class="num">1,031,037</td><td class="num">9.1%</td></tr>
+        <tr><td>Kelvin Ngo (Eng)</td><td class="num">100,000</td><td class="num">0.9%</td></tr>
+        <tr><td>Option Pool (available)</td><td class="num">—</td><td class="num">8.9%</td></tr>
+        <tr class="strong"><td>Total</td><td class="num">10,410,373</td><td class="num">100%</td></tr>
+      </tbody>
+    </table>
+    <div style="margin-top:16px;">
+      <div class="card-title" style="margin-bottom:12px;">Pre-Seed SAFEs Outstanding</div>
+      <div class="safe-row" style="border-top:1px solid var(--border);">
+        <div class="safe-investor">a16z Speedrun Fund 2, L.P.</div>
+        <div class="safe-amount">$500K</div>
+        <div class="safe-cap">$5M cap</div>
+        <span class="badge badge-blue">Post-Money</span>
+      </div>
+      <div class="safe-row">
+        <div class="safe-investor">Straia Pre-Seed May 2025 SPV (CGF2021)</div>
+        <div class="safe-amount">$214.5K</div>
+        <div class="safe-cap">$8M cap</div>
+        <span class="badge badge-blue">Post-Money</span>
+      </div>
+      <div class="safe-row">
+        <div class="safe-investor">JFF Ventures Economic Mobility Fund I</div>
+        <div class="safe-amount">$360K</div>
+        <div class="safe-cap">$12M cap</div>
+        <span class="badge badge-blue">Post-Money</span>
+      </div>
+      <div class="safe-row">
+        <div class="safe-investor">Reach IV, L.P. / Reach Founders' Fund</div>
+        <div class="safe-amount">$300K</div>
+        <div class="safe-cap">$12M cap</div>
+        <span class="badge badge-blue">Post-Money</span>
+      </div>
+      <div class="safe-row" style="border-bottom:none">
+        <div class="safe-investor" style="color:var(--text-dim)">Total Pre-Seed</div>
+        <div class="safe-amount">$1.375M</div>
+        <div class="safe-cap"></div>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ─── GTM & PIPELINE ─── -->
+<div id="tab-gtm" class="tab-content">
+<div class="container">
+
+  <div class="grid-2" style="margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title">GTM Motion</div>
+      <div class="expand-btns">
+        <button class="expand-btn" onclick="expandAll('gtm')">Expand All</button>
+        <button class="expand-btn" onclick="collapseAll('gtm')">Collapse All</button>
+      </div>
+
+      <div class="section" data-group="gtm">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title"><span style="color:var(--accent)">01</span> Dual-Track System Selling</div>
+          <div class="section-chevron">▶</div>
+        </div>
+        <div class="section-body">
+          <p>Straia sells <strong>bottom-up</strong> (individual institution) and <strong>top-down</strong> (system chancellor/VP) simultaneously. When both sides see the value, system-wide deals close faster. This was demonstrated with TBR: Roane State was the beach-head, and system-level visibility became the hook for all 36 colleges.</p>
+          <p>Community colleges are organized in state systems (TN has 36 under one governing body, SUNY has 60+). Once one integration is built, expansion across the system requires minimal incremental work — shared SIS/LMS/CRM stacks.</p>
+        </div>
+      </div>
+
+      <div class="section" data-group="gtm">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title"><span style="color:var(--accent)">02</span> Carahsoft / E&I Cooperative Procurement</div>
+          <div class="section-chevron">▶</div>
+        </div>
+        <div class="section-body">
+          <p>The biggest friction in selling to public higher ed is the RFP process — typically 6–12 months. Straia is in final stages of signing with <strong>Carahsoft</strong>, the largest government tech reseller in the US, to get listed on <strong>E&I Cooperative Services</strong> contracts.</p>
+          <p>Once listed, any public institution in a participating state can purchase directly without an RFP. This is a genuine procurement moat — not just a competitive advantage but a category unlocking mechanism. The combination of system-level selling and cooperative procurement means they can close a 36-institution deal without 36 separate RFPs.</p>
+        </div>
+      </div>
+
+      <div class="section" data-group="gtm">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title"><span style="color:var(--accent)">03</span> Tennessee Proof Point</div>
+          <div class="section-chevron">▶</div>
+        </div>
+        <div class="section-body">
+          <p>Six months of relationship-building with the Tennessee Board of Regents (TBR), meeting every 2 months. Launched beta at Roane State CC. <strong>TBR is now accelerating Straia deployment across all 36 colleges</strong> — representing a $4.5M annual contract. Ryan and Alan (co-founders) lived on the Roane State campus for 3 months.</p>
+          <p>The TBR Chancellor's letter (Flora W. Tydings, Ed.D.) and Roane State President's letter (Chris Waley) both confirm system enthusiasm. 5.2 queries per user per week in beta Week 3, up 53% WoW — this is real usage, not demos.</p>
+        </div>
+      </div>
+
+      <div class="section" data-group="gtm">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title"><span style="color:var(--accent)">04</span> Pricing Model</div>
+          <div class="section-chevron">▶</div>
+        </div>
+        <div class="section-body">
+          <p>Per-FTE pricing, tiered by institution size. Budget comes from enterprise IT — a horizontal tool accessible to the full administrative staff vs. legacy tools that serve 2-3 data analysts. Sample: a community college paying $70K/yr for legacy reporting tools → Straia at ~$150K/yr, deployed institution-wide.</p>
+          <p><strong>Integration cost</strong>: $40–80K one-time (waived or reduced for early customers). <strong>Annual ARR</strong>: ranges from ~$90K (small 2-yr college) to $720K+ (Northern Virginia CC, 76K students). System contracts like TBR and SUNY are $1.7M–$9M+ ARR.</p>
+          <p>Carahsoft reseller take rate: ~10%. Net ARR is Carahsoft-adjusted across all pipeline.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Pipeline by Stage · As of Mar 30, 2026</div>
+      <table class="tbl" style="margin-bottom:16px;">
+        <thead><tr><th>Stage</th><th>Probability</th><th class="num">Gross ARR</th><th class="num">Weighted ARR</th></tr></thead>
+        <tbody>
+          <tr><td><span class="stage-dot stage-procurement"></span>Procurement</td><td>100%</td><td class="num">$3,898,000</td><td class="num" style="color:var(--accent)">$3,898,000</td></tr>
+          <tr><td><span class="stage-dot stage-proposal"></span>Proposal</td><td>75%</td><td class="num">$216,000</td><td class="num" style="color:var(--blue)">$162,000</td></tr>
+          <tr><td><span class="stage-dot stage-qualified"></span>Qualified</td><td>50%</td><td class="num">$1,728,000</td><td class="num" style="color:var(--yellow)">$864,000</td></tr>
+          <tr><td><span class="stage-dot stage-discovery"></span>Discovery</td><td>20%</td><td class="num">$2,394,000</td><td class="num" style="color:var(--orange)">$479,000</td></tr>
+          <tr><td><span class="stage-dot stage-lead"></span>Lead</td><td>10%</td><td class="num">$37,659,000</td><td class="num" style="color:var(--text-dim)">$3,766,000</td></tr>
+          <tr class="strong accent"><td colspan="2">Total Weighted</td><td class="num">$45,895,000</td><td class="num">$9,169,000</td></tr>
+        </tbody>
+      </table>
+      <div class="highlight warn">
+        <strong>Key observation on pipeline composition</strong>
+        The $9.2M weighted ARR is heavily back-loaded: 41% of weighted value is in "Lead" stage (10% probability). The near-term actionable pipeline (Procurement + Proposal) is ~$4.1M gross, of which $3.8M is TBR — a single counterparty. The model needs contract diversification.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">System Pipeline (Active Conversations)</div>
+    <table class="tbl">
+      <thead><tr><th>System</th><th>State</th><th>Stage</th><th>Institutions</th><th class="num">Net ARR</th><th class="num">TCV (3yr)</th><th>Close</th></tr></thead>
+      <tbody>
+        <tr><td><strong>TBR Community Colleges</strong></td><td>TN</td><td><span class="badge badge-green" style="font-size:9px">Procurement</span></td><td>12 (→36)</td><td class="num" style="color:var(--accent)">$1,728,000</td><td class="num">$5,184,000</td><td>Oct 2026</td></tr>
+        <tr><td>TBR TCAT (Tech Colleges)</td><td>TN</td><td><span class="badge badge-green" style="font-size:9px">Procurement</span></td><td>23</td><td class="num" style="color:var(--accent)">$2,070,000</td><td class="num">$6,210,000</td><td>Jun 2027</td></tr>
+        <tr><td>SUNY System</td><td>NY</td><td><span class="badge badge-orange" style="font-size:9px">Lead</span></td><td>56</td><td class="num">$9,072,000</td><td class="num">$27,216,000</td><td>Feb 2027</td></tr>
+        <tr><td>Virginia CC System</td><td>VA</td><td><span class="badge badge-orange" style="font-size:9px">Lead</span></td><td>20</td><td class="num">$2,520,000</td><td class="num">$7,560,000</td><td>May 2027</td></tr>
+        <tr><td>Illinois CC System</td><td>IL</td><td><span class="badge badge-orange" style="font-size:9px">Lead</span></td><td>10</td><td class="num">$1,440,000</td><td class="num">$4,320,000</td><td>Aug 2027</td></tr>
+        <tr><td>Kentucky KCTCS</td><td>KY</td><td><span class="badge badge-orange" style="font-size:9px">Lead</span></td><td>17</td><td class="num">$2,142,000</td><td class="num">$6,426,000</td><td>Nov 2027</td></tr>
+        <tr><td>Minnesota State</td><td>MN</td><td><span class="badge badge-orange" style="font-size:9px">Lead</span></td><td>34</td><td class="num">$4,896,000</td><td class="num">$14,688,000</td><td>Nov 2027</td></tr>
+        <tr><td>Texas State University System</td><td>TX</td><td><span class="badge badge-yellow" style="font-size:9px">Discovery</span></td><td>6</td><td class="num">$1,296,000</td><td class="num">$3,888,000</td><td>Nov 2027</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</div>
+
+<!-- ─── FINANCIALS ─── -->
+<div id="tab-financials" class="tab-content">
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">ARR Trajectory</div>
+    <div class="chart-wrap">
+      <div class="chart-yaxis">
+        <div>$1M</div>
+        <div>$750K</div>
+        <div>$500K</div>
+        <div>$250K</div>
+        <div>$0</div>
+      </div>
+      <div class="chart-bars">
+        <div class="chart-bar-group" title="Launch" style="max-width:60px">
+          <div class="chart-bar" style="height:10%;background:var(--accent);opacity:0.5" title="Pre-launch: ~$100K"></div>
+        </div>
+        <div class="chart-bar-group" title="W2" style="max-width:60px">
+          <div class="chart-bar" style="height:17.5%;background:var(--accent);opacity:0.7" title="W2: $175K"></div>
+        </div>
+        <div class="chart-bar-group" title="W3" style="max-width:60px">
+          <div class="chart-bar" style="height:67.5%;background:var(--accent)" title="W3: $675K"></div>
+        </div>
+        <div class="chart-bar-group" title="W12 proj" style="max-width:60px">
+          <div class="chart-bar" style="height:100%;background:var(--accent);opacity:0.3;border:1px dashed var(--accent)" title="W12 projected: $1M"></div>
+        </div>
+      </div>
+      <div class="chart-bar-label">
+        <span>Launch</span><span>Week 2</span><span>Week 3</span><span>Week 12 (proj)</span>
+      </div>
+    </div>
+    <div class="chart-legend">
+      <span><span class="legend-dot" style="background:var(--accent)"></span>ARR</span>
+      <span style="color:var(--text-dim)"><span class="legend-dot" style="border:1px dashed var(--accent)"></span>Projected</span>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Cost Structure · Apr 2026 → Dec 2027</div>
+      <table class="tbl">
+        <thead><tr><th>Category</th><th class="num">Period Total</th><th class="num">Peak Monthly</th></tr></thead>
+        <tbody>
+          <tr><td>Founder Salaries (4)</td><td class="num">$1,302,083</td><td class="num">$63,021</td></tr>
+          <tr><td>Engineering (8 hires)</td><td class="num">$3,693,229</td><td class="num">$231,250</td></tr>
+          <tr><td>Deployment / Engagement (8)</td><td class="num">$2,311,458</td><td class="num">$138,542</td></tr>
+          <tr><td>Ops / Coordinator (3 + 9 regional)</td><td class="num">$2,450,521</td><td class="num">$186,979</td></tr>
+          <tr><td>Infrastructure (AI + cloud)</td><td class="num">$1,125,000</td><td class="num">$75,000</td></tr>
+          <tr><td>Rent / Travel / fCFO / Legal</td><td class="num">$787,500</td><td class="num">$46,000</td></tr>
+          <tr class="strong"><td>Total (21 months)</td><td class="num">$11,669,792</td><td class="num">$732,792</td></tr>
+        </tbody>
+      </table>
+      <div class="highlight warn" style="margin-top:16px">
+        <strong>Deployment-heavy cost structure</strong>
+        30% of the raise goes to deployment & engagement. High-touch delivery model required for community college context — this is correct but capital-intensive. 9 regional system coordinators onboarded in one month (Apr 2027) when SUNY/VA/IL/KY come online simultaneously.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Headcount Build</div>
+      <table class="tbl">
+        <thead><tr><th>Date</th><th>Function</th><th class="num">Cumulative</th></tr></thead>
+        <tbody>
+          <tr><td>Apr 2026</td><td>Founders + 2 Eng</td><td class="num">6</td></tr>
+          <tr><td>May 2026</td><td>+2 Engagement Mgrs, +1 Eng, +1 Coord</td><td class="num">11</td></tr>
+          <tr><td>Jun 2026</td><td>+Snr Infra, +Snr ML, +BE, +Solutions Eng</td><td class="num">15</td></tr>
+          <tr><td>Aug 2026</td><td>+2 Engagement Mgrs, +BE, +Legal</td><td class="num">20</td></tr>
+          <tr><td>Oct 2026</td><td>+2 Engagement Mgrs, +BE, +Chief of Staff</td><td class="num">25</td></tr>
+          <tr><td>Feb 2027</td><td>+Solutions Eng, +BE</td><td class="num">27</td></tr>
+          <tr><td>Apr 2027</td><td>+7 System Coordinators (SUNY, VA, IL, KY)</td><td class="num">34</td></tr>
+          <tr><td>May 2027</td><td>+1 Eng, +1 Coordinator</td><td class="num">35</td></tr>
+          <tr class="strong"><td>Sep 2027</td><td>+1 Eng</td><td class="num">36</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Raise & Runway</div>
+    <div class="grid-3" style="margin-top:0;gap:12px;">
+      <div class="highlight">
+        <strong>$5–7M Seed Target</strong>
+        Use of funds: 65% Product & Eng, 30% Deployment & Engagement, 5% Sales, 10% Infra. Total cost model: ~$11.7M over 21 months. Gap between raise and model = plan for revenue to cover the remainder. Targeting $9M ARR in 18 months.
+      </div>
+      <div class="highlight warn">
+        <strong>Revenue dependency</strong>
+        The cost model totals $11.7M but the raise is $5–7M. The model implicitly assumes ~$4–5M in revenue over the period to fund operations. This is achievable with TBR + 2 additional system wins but should be stress-tested.
+      </div>
+      <div class="highlight">
+        <strong>Pre-existing SAFEs</strong>
+        $1.375M in pre-seed SAFEs will convert in this round. Caps range from $5M (a16z Speedrun) to $12M (JFF, Reach). Lowest cap converts at most dilutive terms — important to model pre-money valuation carefully.
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ─── RISKS ─── -->
+<div id="tab-risks" class="tab-content">
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">Risk Heatmap</div>
+    <div class="risk-grid">
+      <div class="risk-cell risk-high">Revenue Concentration<div class="risk-label">TBR = 60%+ of Procurement ARR</div></div>
+      <div class="risk-cell risk-high">Sales Cycle Length<div class="risk-label">Institutional buying is slow even with RFP bypass</div></div>
+      <div class="risk-cell risk-med">Integration Complexity<div class="risk-label">Ellucian / Workday SIS are brutal</div></div>
+      <div class="risk-cell risk-med">Deployment Scalability<div class="risk-label">High-touch model; hard to scale</div></div>
+      <div class="risk-cell risk-low">Product-Market Fit<div class="risk-label">Validated — letters + ARR + usage</div></div>
+      <div class="risk-cell risk-med">Competitive Entry<div class="risk-label">Glean, Copilot, EAB could pivot</div></div>
+      <div class="risk-cell risk-med">Budget Compression<div class="risk-label">Fed funding cuts hitting CC budgets</div></div>
+      <div class="risk-cell risk-high">Financial Model Gap<div class="risk-label">Raise + revenue must cover $11.7M cost</div></div>
+      <div class="risk-cell risk-low">Team Quality<div class="risk-label">Strong — domain + technical depth</div></div>
+      <div class="risk-cell risk-med">Carahsoft Timing<div class="risk-label">Not yet signed — procurement moat unconfirmed</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Deep Dive Risk Analysis</div>
+    <div class="expand-btns">
+      <button class="expand-btn" onclick="expandAll('risk')">Expand All</button>
+      <button class="expand-btn" onclick="collapseAll('risk')">Collapse All</button>
+    </div>
+
+    <div class="section open" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="badge badge-red" style="font-size:9px;margin-right:8px">HIGH</span> Revenue Concentration (TBR Single Counterparty)</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>The $3.8M in Procurement-stage pipeline is essentially one deal: TBR Community Colleges ($1.73M) and TBR TCAT ($2.07M). Both are with the same governing body — the Tennessee Board of Regents. A TBR procurement delay, budget freeze, or change in chancellor could materially impact near-term ARR.</p>
+        <p><strong>Mitigant:</strong> The TBR Chancellor's and Roane State President's letters are strong social proof. The relationship has been built over 6+ months. The product is live and producing usage. But the contractual commitment should be confirmed — the TBR letter says "strong interest in expanding" not "signed contract."</p>
+        <p><strong>Diligence question:</strong> Is the TBR expansion a signed contract or a letter of intent? What is the payment structure and trigger conditions?</p>
+      </div>
+    </div>
+
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="badge badge-red" style="font-size:9px;margin-right:8px">HIGH</span> Financial Model: Raise vs. Cost Gap</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>The cost model totals $11.67M over 21 months (Apr 2026 – Dec 2027). The raise is $5–7M. The gap requires ~$4.7–6.7M in net revenue over the period, or a subsequent raise. The model's revenue targets ($9M ARR by 18 months) are aggressive — they require closing TBR + 2-3 additional systems. Missing by even one system creates meaningful cash pressure.</p>
+        <p><strong>Key pressure point:</strong> April 2027 is when 7 new regional system coordinators onboard simultaneously, for SUNY, VA, IL, and KY expansion. Monthly burn jumps from ~$600K to ~$715K at that point. If those systems are still in "Lead" stage at that time, the company burns through cash rapidly.</p>
+        <p><strong>Diligence question:</strong> What does the 12-month cash plan look like at $3M ARR vs $9M ARR? What is the next round plan?</p>
+      </div>
+    </div>
+
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="badge badge-red" style="font-size:9px;margin-right:8px">HIGH</span> Sales Cycle Velocity at Scale</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>The Tennessee deal took 6+ months of relationship-building to reach procurement. Even with the Carahsoft/E&I bypass, large system deals (SUNY at $9M ARR, MN State at $4.9M) will require extensive stakeholder management, IT reviews, legal, and data governance approvals. The pipeline has 5 "Lead" stage system deals all projected to close in Feb–Nov 2027. That's 5 complex 8-figure TCV deals in 10 months.</p>
+        <p><strong>Mitigant:</strong> System-level demand is genuine — TBR's success creates social proof for other chancellors. Carahsoft gets them past formal procurement. But the diligence, negotiation, and onboarding layers remain.</p>
+        <p><strong>Diligence question:</strong> How many institutions have Straia formally onboarded to date? What does a full onboarding cycle look like (data dictionary buildout, FERPA compliance review, IT security review)?</p>
+      </div>
+    </div>
+
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="badge badge-yellow" style="font-size:9px;margin-right:8px">MED</span> Budget Cuts Hitting Community Colleges</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>The deck's "Why Now" thesis notes $12B in education grants disrupted and 15 states cutting funding. This creates urgency — but also constrains IT budgets. Community colleges pricing at $100–150K/yr competing for the same budget as legacy reporting tools is defensible. But if states freeze IT procurement (as some are under current federal budget pressures), even a Carahsoft-listed vendor can get blocked.</p>
+        <p><strong>Mitigant:</strong> Straia displaces existing spend (legacy reporting tools) rather than being incremental budget. The ROI case is clear. But timing and advocacy matters.</p>
+        <p><strong>Diligence question:</strong> How are TBR and other active prospects navigating current state budget pressures? Have any conversations stalled for budget reasons?</p>
+      </div>
+    </div>
+
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="badge badge-yellow" style="font-size:9px;margin-right:8px">MED</span> Carahsoft / E&I Contract Not Yet Signed</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>The GTM memo says they are "in final stages of signing" with Carahsoft and expect to be listed "within weeks." This is a significant piece of the GTM thesis — but it is not closed. Until they're on the cooperative contract, they face the full RFP process for any public institution. The procurement moat is partially hypothetical.</p>
+        <p><strong>Diligence question:</strong> Can we get confirmation on Carahsoft timeline? Has the contract been signed? Is there an exclusivity or preferred-vendor arrangement?</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Open Diligence Questions</div>
+    <table class="tbl">
+      <thead><tr><th>#</th><th>Question</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Is TBR expansion a signed contract or LOI? Payment terms and conditions?</td><td><span class="badge badge-red" style="font-size:9px">Critical</span></td></tr>
+        <tr><td>2</td><td>Carahsoft status — signed? Timeline to E&I listing?</td><td><span class="badge badge-red" style="font-size:9px">Critical</span></td></tr>
+        <tr><td>3</td><td>Demo the product — live queries at Roane State. See actual data dictionary.</td><td><span class="badge badge-red" style="font-size:9px">Critical</span></td></tr>
+        <tr><td>4</td><td>What is the full onboarding timeline for a net-new institution? Who owns it?</td><td><span class="badge badge-yellow" style="font-size:9px">High</span></td></tr>
+        <tr><td>5</td><td>12-month cash plan under base case ($3M ARR) vs bull case ($9M ARR)?</td><td><span class="badge badge-yellow" style="font-size:9px">High</span></td></tr>
+        <tr><td>6</td><td>Reference calls: Jamie Stringer (Roane State VP), Flora Tydings (TBR Chancellor)</td><td><span class="badge badge-yellow" style="font-size:9px">High</span></td></tr>
+        <tr><td>7</td><td>FERPA compliance architecture — how does role-based access work technically?</td><td><span class="badge badge-yellow" style="font-size:9px">High</span></td></tr>
+        <tr><td>8</td><td>How is the $675K ARR structured? Actual invoiced + paid or contracted?</td><td><span class="badge badge-blue" style="font-size:9px">Medium</span></td></tr>
+        <tr><td>9</td><td>Competitive intel — has Glean, EAB, or Civitas tried to sell to any active Straia prospects?</td><td><span class="badge badge-blue" style="font-size:9px">Medium</span></td></tr>
+        <tr><td>10</td><td>Valuation expectations for this round? Pre-money? Option pool expansion?</td><td><span class="badge badge-blue" style="font-size:9px">Medium</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+</div>
+
+<!-- ─── MEMO ─── -->
+<div id="tab-memo" class="tab-content">
+<div class="container">
+<div class="memo">
+  <div class="memo-header">
+    <div class="memo-title">Investment Memo: Straia</div>
+    <div class="memo-meta">
+      <div class="memo-meta-key">Date</div><div class="memo-meta-val">April 3, 2026</div>
+      <div class="memo-meta-key">Stage</div><div class="memo-meta-val">Seed · $5–7M</div>
+      <div class="memo-meta-key">Category</div><div class="memo-meta-val">Agentic AI · Higher Education Administration</div>
+      <div class="memo-meta-key">Intro</div><div class="memo-meta-val">Emily Bennett, a16z Speedrun (mutual connection)</div>
+      <div class="memo-meta-key">Reviewer</div><div class="memo-meta-val">Craig W., Collaborative Fund</div>
+      <div class="memo-meta-key">Status</div><div class="memo-meta-val">Reviewing — fast-moving raise</div>
+    </div>
+  </div>
+  <div class="memo-body">
+
+    <div class="memo-section-title">Executive Summary</div>
+    <div class="memo-prose">
+      <p>Straia is building the agentic AI operating system for higher education administration. In a market where hundreds of decisions are made on intuition — because getting a data query answered by institutional research takes one to two months — Straia gives any administrator with the right access the ability to query, visualize, and act on institutional data in real time.</p>
+      <p>The company launched its beta three weeks ago and went from zero to $675K ARR. It has a signed or near-signed deal with the Tennessee Board of Regents to deploy across all 36 community and technical colleges in the state — a $4.5M annual contract. The founding team is exceptional: a CEO who cold-called 3,000 colleges and lived on a campus for three months, a COO who built the commercial motion at Sana through its $1.1B Workday acquisition, a CTO with data infrastructure credentials at IPO-scale companies, and a CPO who has spent her career building complex products for non-technical users.</p>
+      <p>This is one of the strongest early-stage signals we have seen in the education technology space. We recommend proceeding to full diligence and moving quickly given the fundraise velocity.</p>
+    </div>
+
+    <div class="memo-section-title">Why This Matters for Collab</div>
+    <div class="memo-prose">
+      <p>Collab's thesis — good for you and good for the world — fits Straia precisely. Community colleges are the institutions that serve as the first rung of opportunity for the largest and least-served population of American learners. They are the schools that gave Ryan's parents — immigrants from Hong Kong — a path to PhDs and a middle-class life. They are fighting for survival: enrollment declining, funding being cut from both state budgets and federal grants, administrative costs growing at 5x the rate of instructional staff.</p>
+      <p>Straia is not an incremental improvement. It is a platform that allows community colleges to make data-informed decisions for the first time — and ultimately to automate the administrative layer that has become so bloated, freeing resources for actual instruction and student support. The good for the world case is genuine: better student retention, earlier intervention for at-risk students, more efficient allocation of scarce resources.</p>
+      <p>We also have personal context. Craig ran entrepreneurship and innovation at NYU for 10 years and still teaches. His wife is a Columbia professor. We understand how broken higher ed administration is. We understand why this product resonates immediately with anyone who has worked inside a university.</p>
+    </div>
+
+    <div class="memo-section-title">The Opportunity</div>
+    <div class="memo-prose">
+      <p>Higher education is at a structural inflection point. Enrollment faces a 15% decline over the next four years from the demographic cliff. $12B in federal education grants are disrupted. 15 states are cutting higher ed funding. Administrative staff has grown 5x faster than instructional staff over the last two decades. Every decision about enrollment, retention, curriculum, financial aid, and resource allocation is being made with 1–2 month old data, or on pure intuition, because the systems of record — Ellucian Banner, Canvas, Element451 — are siloed, legacy, and inaccessible without SQL.</p>
+      <p>The community college system structure creates a distribution mechanism that is unique to this market. Most colleges sit within state systems (Tennessee has 36 under one governing body, SUNY has 60+). Once Straia integrates with the common SIS/LMS/CRM stack at one institution, it can expand system-wide with minimal incremental work. System-level leaders have no real-time visibility into what is happening across their institutions — Straia solves this with a unified intelligence dashboard that gives chancellors the cross-system view they have never had.</p>
+      <p>Straia's beachhead is the ~1,600 community and technical colleges in state systems across the US, representing a $425M serviceable addressable market. This expands to $2.25B with 4-year colleges and to $12.5B internationally.</p>
+    </div>
+
+    <div class="memo-section-title">Product & Differentiation</div>
+    <div class="memo-prose">
+      <p>The product is a unified agentic layer that integrates with SIS (Banner, Colleague, Workday, PeopleSoft), LMS (Blackboard, Canvas, D2L), and CRM (Element451, Slate, EAB Navigate) systems. The core technical differentiation is the <strong>context layer</strong> — a school-specific data dictionary that maps institutional terminology and data definitions before any query is run. This is the moat: every institution names and defines its data differently, and building this context takes months per institution. Straia has already done it.</p>
+      <p>Phase 1 (now): Unified query and visualization — any administrator, role-based access, real-time. 5.2 queries per user per week in beta Week 3, growing 53% WoW. Phase 1.5 (building now): triggers and interventions — early warning systems and automated outreach to at-risk students directly within the platform. Long-term vision: the full administrative operating system for higher education, automating every workflow outside of instruction.</p>
+      <p>Competitive positioning: Straia is the only platform that is both enterprise-wide (not a point solution) and higher-ed native (not a generic tool like Glean or Copilot). Civitas Learning, HelioCampus, and EAB are higher-ed native but point solutions with no agentic layer.</p>
+    </div>
+
+    <div class="memo-section-title">GTM & Traction</div>
+    <div class="memo-prose">
+      <p>The go-to-market motion is dual-track — sell bottom-up to individual institutions and top-down to system leadership simultaneously. When both sides close, system-wide deals accelerate. This was demonstrated with TBR: the Roane State pilot created the proof point that is now driving the full 36-college system deployment.</p>
+      <p>The procurement innovation is equally important: Straia is onboarding with Carahsoft to get listed on E&I cooperative buying contracts, which allows any public institution in a participating state to purchase without an RFP. This bypasses the 6–12 month procurement cycle that has killed many edtech companies.</p>
+      <p>Current traction: $675K ARR, 3 weeks post-launch. Near-term pipeline includes the TBR deal (~$3.8M ARR, nearing contract), Vincennes University, Coastal Bend CC, Rend Lake (IL), and South Piedmont CC. Weighted pipeline totals $9.2M. Ryan assembled this pipeline with zero go-to-market spend.</p>
+    </div>
+
+    <div class="memo-section-title">Team</div>
+    <div class="memo-prose">
+      <p><strong>Ryan Lau (CEO)</strong> spent two years as an education PE investor at Riverside, earned a Wharton MBA, then cold-called 3,000 colleges over six months and moved to Tennessee to live on the Roane State campus. His origin story — parents met at a community college in Indiana, went to UPenn, earned PhDs — is the thesis. He has assembled ~$10M in pipeline without spending a dollar on go-to-market.</p>
+      <p><strong>Gautam Narasimhan (COO)</strong> built the early US commercial motion at Sana, growing from single digits to ~90 people, and stayed through the $1.1B Workday acquisition. He brings hard-won expertise in deploying complex AI products at non-technical enterprise organizations — exactly what Straia needs at community colleges.</p>
+      <p><strong>Alan Chan (CTO)</strong> built real-time data infrastructure at IPO scale (Skillz, $3.5B), routed $9.6B in annual real estate transactions at Opendoor, and understands the deep complexity of integrating with legacy SIS systems. <strong>Nikki Dansey (CPO)</strong> co-founded a Khosla-backed company as CTO, built ML product at Arcus (acquired by Addepar), and shipped Kokai at The Trade Desk — her specialty is making hyper-technical systems accessible to non-technical users.</p>
+      <p>This is a complete founding team — commercial, technical, product, and operations — with directly relevant experience in every dimension of the challenge ahead.</p>
+    </div>
+
+    <div class="memo-section-title">Key Risks</div>
+    <div class="memo-prose">
+      <p><strong>Revenue concentration:</strong> The TBR deal represents ~60% of near-term contracted ARR. Contract confirmation and diversification are the most important near-term diligence items. The TBR Chancellor letter expresses strong enthusiasm but does not confirm a signed contract.</p>
+      <p><strong>Financial model gap:</strong> The 21-month cost plan totals $11.7M; the raise is $5–7M. The model requires revenue to cover the gap. At $9M ARR this works; at $3M ARR the company needs to extend runway or raise again sooner than planned. April 2027 is the highest-risk month when 7 system coordinators onboard simultaneously.</p>
+      <p><strong>Sales cycle velocity:</strong> Five large system deals (SUNY, VA, IL, KY, MN) all projected to close in a 10-month window in 2027. Each is a complex multi-stakeholder process. Carahsoft/E&I bypass helps but does not eliminate the institutional decision-making layer.</p>
+      <p><strong>Carahsoft not yet signed:</strong> The procurement moat is partially hypothetical until the contract is executed and they are listed on E&I cooperative contracts.</p>
+    </div>
+
+    <div class="memo-section-title">Recommendation</div>
+    <div class="memo-verdict">
+      <div class="memo-verdict-title">Proceed to Full Diligence — Move Quickly</div>
+      <div class="memo-verdict-body">
+        Straia is one of the most compelling early signals we have seen in education technology: exceptional founders, genuine customer love, and extraordinary early traction in a market where Collab has deep conviction and personal context. The product solves a real, urgent problem for institutions under existential pressure. The system-level GTM motion creates compounding velocity that is hard to replicate. The raise is moving fast — Emily Bennett's intro from a16z Speedrun signals this will be a competitive process.
+        <br><br>
+        Immediate next steps: (1) confirm TBR contract status, (2) get a live product demo at Roane State, (3) validate Carahsoft timeline, (4) reference calls with Jamie Stringer and Flora Tydings. If those checks pass, this is a strong yes.
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+</div>
+
+<script>
+  function switchTab(name) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function toggleSection(header) {
+    const section = header.parentElement;
+    section.classList.toggle('open');
+  }
+
+  function expandAll(group) {
+    document.querySelectorAll(`.section[data-group="${group}"]`).forEach(s => s.classList.add('open'));
+  }
+
+  function collapseAll(group) {
+    document.querySelectorAll(`.section[data-group="${group}"]`).forEach(s => s.classList.remove('open'));
+  }
+
+  // Animate score bars on load
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.score-bar').forEach(bar => {
+      const w = bar.style.width;
+      bar.style.width = '0';
+      setTimeout(() => bar.style.width = w, 300);
+    });
+  });
+</script>
+</body>
+</html>
