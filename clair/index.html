@@ -9,7 +9,7 @@
 <script>
 (function() {
   const CORRECT = 'collabfund';
-  const GRANTED = 'clair_access_granted';
+  const GRANTED = 'clair_v3_access_granted';
   if (sessionStorage.getItem(GRANTED) !== '1') {
     document.addEventListener('DOMContentLoaded', function() {
       document.body.style.display = 'none';
@@ -346,8 +346,7 @@
     </div>
     <div class="header-badges">
       <span class="badge badge-green">● Strong Traction</span>
-      <span class="badge badge-yellow">⚠ Pricing Discrepancy</span>
-      <span class="badge badge-blue">Intro: Emily Bennett / a16z</span>
+      <span class="badge badge-blue">Intro: Emily Bennett / a16z Speedrun</span>
     </div>
   </div>
 </div>
@@ -380,10 +379,10 @@
       <div class="kpi-value">4,388</div>
       <div class="kpi-sub">Avg 75.5 / day</div>
     </div>
-    <div class="kpi kpi-yellow">
-      <div class="kpi-label">⚠ Pricing</div>
-      <div class="kpi-value">$369</div>
-      <div class="kpi-sub">COGS at scale $37</div>
+    <div class="kpi kpi-green">
+      <div class="kpi-label">HW Gross Margin</div>
+      <div class="kpi-value">$332</div>
+      <div class="kpi-sub">~90% · $369 device · $37 COGS</div>
     </div>
     <div class="kpi">
       <div class="kpi-label">Seed Round</div>
@@ -636,7 +635,7 @@
         <div class="econ-box"><div class="econ-box-label">Payback period</div><div class="econ-box-val" id="r-payback" style="font-size:16px">At sale</div></div>
         <div class="econ-box"><div class="econ-box-label">Sub LTV alone</div><div class="econ-box-val" id="r-sublv">$360</div></div>
       </div>
-      <div class="highlight warn" style="margin-top:12px"><strong>Pricing discrepancy — verify immediately</strong>Meeting notes reference a $169 device price; the deck shows $369. Unit economics differ materially at both price points. Use slider above to model both scenarios.</div>
+
     </div>
 
     <div class="card">
@@ -653,7 +652,7 @@
       <table class="tbl">
         <thead><tr><th>Metric</th><th class="num">Value</th><th>Notes</th></tr></thead>
         <tbody>
-          <tr><td>Device retail price</td><td class="num"><strong>$369</strong></td><td style="color:var(--yellow);font-size:12px">⚠ Verify vs. notes ($169)</td></tr>
+          <tr><td>Device retail price</td><td class="num"><strong>$369</strong></td><td style="color:var(--dim);font-size:12px">Retail · confirmed</td></tr>
           <tr><td>COGS at 100K+ units</td><td class="num">$37</td><td style="color:var(--dim);font-size:12px">All parts + manufacturing</td></tr>
           <tr><td>Gross HW margin</td><td class="num" style="color:var(--accent);font-weight:600">$332 (~90%)</td><td style="color:var(--dim);font-size:12px">Best-in-class for hardware</td></tr>
           <tr><td>Monthly subscription</td><td class="num">$9.99</td><td style="color:var(--dim);font-size:12px">Software + insights layer</td></tr>
@@ -711,16 +710,7 @@
       </div>
     </div>
 
-    <div class="section" data-group="risk">
-      <div class="section-header" onclick="toggleSection(this)">
-        <div class="section-title"><span class="risk-severity sev-high">High</span>&nbsp;&nbsp;$169 vs. $369 Pricing Discrepancy</div>
-        <div class="section-chevron">▶</div>
-      </div>
-      <div class="section-body">
-        <p>Meeting notes reference a $169 device price. The deck prominently shows $369. These produce materially different unit economics: at $169, hardware gross margin drops to $132 (78%) vs. $332 (90%) at $369. LTV falls from $728 to ~$491 in the expected scenario. This is not a rounding difference — it changes the investment thesis.</p>
-        <p><strong>Diligence question:</strong> Is $169 a launch price, a pre-order price, or an error in the notes? What is the actual go-to-market device price?</p>
-      </div>
-    </div>
+
 
     <div class="section" data-group="risk">
       <div class="section-header" onclick="toggleSection(this)">
@@ -793,15 +783,14 @@
       <thead><tr><th>#</th><th>Question</th><th>Priority</th></tr></thead>
       <tbody>
         <tr><td style="color:var(--dim);font-size:12px">1</td><td>Technical whitepaper (mNDA) — blood serum study methodology and results</td><td><span class="badge badge-red">Critical</span></td></tr>
-        <tr><td style="color:var(--dim);font-size:12px">2</td><td>Device pricing: $169 (notes) vs. $369 (deck) — which reflects actual go-to-market?</td><td><span class="badge badge-red">Critical</span></td></tr>
-        <tr><td style="color:var(--dim);font-size:12px">3</td><td>Data room access: cap table, financials, manufacturing agreements, FDA pre-submission</td><td><span class="badge badge-red">Critical</span></td></tr>
-        <tr><td style="color:var(--dim);font-size:12px">4</td><td>Informal Whoop team check — any internal R&D in women's hormonal monitoring?</td><td><span class="badge badge-yellow">High</span></td></tr>
-        <tr><td style="color:var(--dim);font-size:12px">5</td><td>Diligence call with VP of Quality — FDA pre-submission feedback and regulatory timeline</td><td><span class="badge badge-yellow">High</span></td></tr>
-        <tr><td style="color:var(--dim);font-size:12px">6</td><td>MOU structure: binding terms, payment schedules, conversion risk from $20.6M ARR headline</td><td><span class="badge badge-yellow">High</span></td></tr>
-        <tr><td style="color:var(--dim);font-size:12px">7</td><td>Manufacturing ramp: DFM status, EVT/DVT/PVT, Q4 2026 ship date feasibility</td><td><span class="badge badge-yellow">High</span></td></tr>
-        <tr><td style="color:var(--dim);font-size:12px">8</td><td>Australian distributor reference call — quality signal on B2B channel</td><td><span class="badge badge-blue">Medium</span></td></tr>
-        <tr><td style="color:var(--dim);font-size:12px">9</td><td>Post-demo day traction trajectory — do pre-orders re-accelerate?</td><td><span class="badge badge-blue">Medium</span></td></tr>
-        <tr><td style="color:var(--dim);font-size:12px">10</td><td>Valuation expectations — pre-money, option pool, and SAFE conversion mechanics</td><td><span class="badge badge-blue">Medium</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">2</td><td>Data room access: cap table, financials, manufacturing agreements, FDA pre-submission</td><td><span class="badge badge-red">Critical</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">3</td><td>Informal Whoop team check — any internal R&D in women's hormonal monitoring?</td><td><span class="badge badge-yellow">High</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">4</td><td>Diligence call with VP of Quality — FDA pre-submission feedback and regulatory timeline</td><td><span class="badge badge-yellow">High</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">5</td><td>MOU structure: binding terms, payment schedules, conversion risk from $20.6M ARR headline</td><td><span class="badge badge-yellow">High</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">6</td><td>Manufacturing ramp: DFM status, EVT/DVT/PVT, Q4 2026 ship date feasibility</td><td><span class="badge badge-yellow">High</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">7</td><td>Australian distributor reference call — quality signal on B2B channel</td><td><span class="badge badge-blue">Medium</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">8</td><td>Post-demo day traction trajectory — do pre-orders re-accelerate?</td><td><span class="badge badge-blue">Medium</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">9</td><td>Valuation expectations — pre-money, option pool, and SAFE conversion mechanics</td><td><span class="badge badge-blue">Medium</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -818,7 +807,7 @@
       <div class="memo-meta-key">Date</div><div class="memo-meta-val">April 7, 2026</div>
       <div class="memo-meta-key">Stage</div><div class="memo-meta-val">Seed · $7–10M raise</div>
       <div class="memo-meta-key">Category</div><div class="memo-meta-val">Femtech · Wearable Health · Consumer Hardware</div>
-      <div class="memo-meta-key">Intro</div><div class="memo-meta-val">Speedrun Demo Day</div>
+      <div class="memo-meta-key">Intro</div><div class="memo-meta-val">Emily Bennett, a16z Speedrun</div>
       <div class="memo-meta-key">Reviewer</div><div class="memo-meta-val">Craig W., Collaborative Fund</div>
       <div class="memo-meta-key">Status</div><div class="memo-meta-val">Active — closing ~1 week post demo day</div>
     </div>
@@ -861,7 +850,7 @@
 
     <div class="memo-section-title">Key Risks</div>
     <div class="memo-prose">
-      <p><strong>Scientific validation:</strong> The pilot study validated against urine-based at-home metabolite tests. The blood serum study is ongoing — this is the decisive milestone. We will not know the true accuracy picture until those results are available. Request whitepaper under mNDA immediately. <strong>Pricing discrepancy:</strong> Meeting notes reference $169 vs. $369 on the deck — this must be resolved before any term discussion, as unit economics differ materially. <strong>Hardware timeline:</strong> Q4 2026 for a 10-sensor wearable with ongoing firmware and ML development is aggressive. Hardware companies routinely miss ship dates. Need to see the manufacturing ramp plan. <strong>B2B conversion:</strong> $20.6M in B2B MOUs is non-binding. Whether clinical partners have budget allocated and on what timeline is unknown.</p>
+      <p><strong>Scientific validation:</strong> The pilot study validated against urine-based at-home metabolite tests. The blood serum study is ongoing — this is the decisive milestone. We will not know the true accuracy picture until those results are available. Request whitepaper under mNDA immediately. <strong>Hardware timeline:</strong> Q4 2026 for a 10-sensor wearable with ongoing firmware and ML development is aggressive. Hardware companies routinely miss ship dates. Need to see the manufacturing ramp plan. <strong>B2B conversion:</strong> $20.6M in B2B MOUs is non-binding. Whether clinical partners have budget allocated and on what timeline is unknown.</p>
     </div>
 
     <div class="memo-verdict">
@@ -871,7 +860,7 @@
         <br><br>
         The central open question is scientific validation depth. Blood serum study results will be decisive. Until then, we are investing in a technically novel approach with strong early demand signals but unconfirmed clinical accuracy.
         <br><br>
-        <strong>Immediate next steps:</strong> (1) Request technical whitepaper under mNDA, (2) Clarify $169 vs. $369 pricing, (3) Request data room access, (4) Informal Whoop team check. If those checks clear, this is a strong yes.
+        <strong>Immediate next steps:</strong> (1) Request technical whitepaper under mNDA, (2) Request data room access, (3) Informal Whoop team check. If those checks clear, this is a strong yes.
       </div>
     </div>
 
