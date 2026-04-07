@@ -9,7 +9,7 @@
 <script>
 (function() {
   const CORRECT = 'collabfund';
-  const GRANTED = 'straia_access_granted';
+  const GRANTED = 'clair_access_granted';
   if (sessionStorage.getItem(GRANTED) !== '1') {
     document.addEventListener('DOMContentLoaded', function() {
       document.body.style.display = 'none';
@@ -26,735 +26,903 @@
 </script>
 <!-- ...TO HERE (and the blank line below)                        -->
 <!-- ============================================================ -->
-  
-<title>Clair Health — Collab Fund Diligence</title>
+
+<title>Clair Health · Seed Diligence · Collaborative Fund</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy: #1A3A5C;
-    --navy-mid: #2a527a;
-    --orange: #C85A2A;
-    --orange-light: #f5e8e0;
-    --bg: #faf9f7;
-    --surface: #ffffff;
-    --surface2: #f5f0eb;
-    --border: #e8e0d8;
-    --text: #1a1a1a;
-    --muted: #777;
-    --green: #3B6D11;
-    --green-bg: #eaf3de;
-    --red: #A32D2D;
-    --red-bg: #fcebeb;
-    --amber: #854F0B;
-    --amber-bg: #faeeda;
-    --blue: #185FA5;
-    --blue-bg: #e6f1fb;
+    --bg:       #f7f6f2;
+    --surface:  #ffffff;
+    --surface2: #f0efe9;
+    --border:   #e2e0d8;
+    --border2:  #cccab8;
+    --text:     #1a1916;
+    --muted:    #5a5849;
+    --dim:      #9c9a8e;
+    --accent:   #2d6a4f;
+    --accent2:  #52b788;
+    --accent-bg:#eef7f2;
+    --red:      #c0392b;
+    --red-bg:   #fdf3f2;
+    --yellow:   #b7791f;
+    --yellow-bg:#fef9ee;
+    --blue:     #1e5f8a;
+    --blue-bg:  #eff6fb;
+    --shadow:   0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
+    --shadow-sm:0 1px 2px rgba(0,0,0,0.06);
+    --radius:   8px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.5; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    position: sticky; top: 0; z-index: 200;
+    box-shadow: var(--shadow-sm);
+  }
+  .header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px; gap: 20px;
+  }
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .logo {
+    width: 34px; height: 34px; background: var(--accent);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-weight: 700; font-size: 16px; color: #fff;
+    flex-shrink: 0;
+  }
+  .header-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--text); }
+  .header-sub { font-size: 12px; color: var(--dim); }
+  .header-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 100px;
+    font-size: 11px; font-weight: 500; border: 1px solid;
+  }
+  .badge-green  { background: var(--accent-bg); color: var(--accent);  border-color: #a8d5bb; }
+  .badge-yellow { background: var(--yellow-bg); color: var(--yellow); border-color: #f0d49a; }
+  .badge-red    { background: var(--red-bg);    color: var(--red);    border-color: #f5b8b3; }
+  .badge-blue   { background: var(--blue-bg);   color: var(--blue);   border-color: #a8cde0; }
+  .badge-gray   { background: var(--surface2);  color: var(--muted);  border-color: var(--border); }
+
+  /* NAV */
+  .nav {
+    background: var(--surface); border-bottom: 2px solid var(--border);
+    padding: 0 40px; display: flex; overflow-x: auto; scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    padding: 14px 20px; font-size: 13px; font-weight: 500; color: var(--dim);
+    cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px;
+    transition: all 0.18s ease; white-space: nowrap; user-select: none;
+  }
+  .nav-tab:hover { color: var(--accent); background: var(--accent-bg); border-radius: 6px 6px 0 0; }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+  .tab-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; background: var(--surface2);
+    border-radius: 4px; font-size: 10px; font-family: 'DM Mono', monospace;
+    margin-right: 6px; color: var(--dim); transition: all 0.18s;
+  }
+  .nav-tab.active .tab-num, .nav-tab:hover .tab-num { background: var(--accent); color: white; }
 
   /* LAYOUT */
-  .shell { display: flex; min-height: 100vh; }
-  .sidebar { width: 220px; background: var(--navy); flex-shrink: 0; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
-  .main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+  .container { max-width: 1080px; margin: 0 auto; padding: 32px 40px; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
 
-  /* SIDEBAR */
-  .sidebar-logo { padding: 20px 18px 14px; border-bottom: 1px solid rgba(255,255,255,.1); }
-  .sidebar-logo .co { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -.3px; }
-  .sidebar-logo .fund { font-size: 10px; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .08em; margin-top: 2px; }
-  .sidebar-logo .badge { display: inline-block; background: var(--orange); color: #fff; font-size: 9px; font-weight: 600; padding: 2px 6px; border-radius: 3px; margin-top: 6px; letter-spacing: .04em; }
-  .sidebar-section { padding: 12px 0 4px; }
-  .sidebar-label { font-size: 9px; font-weight: 600; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .1em; padding: 0 18px 6px; }
-  .nav-item { display: flex; align-items: center; gap: 9px; padding: 8px 18px; cursor: pointer; color: rgba(255,255,255,.65); font-size: 13px; transition: all .15s; border-left: 3px solid transparent; }
-  .nav-item:hover { color: #fff; background: rgba(255,255,255,.06); }
-  .nav-item.active { color: #fff; background: rgba(255,255,255,.1); border-left-color: var(--orange); }
-  .nav-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-  .dot-red { background: #E24B4A; }
-  .dot-amber { background: #EF9F27; }
-  .dot-green { background: #63991A; }
-  .dot-blue { background: #378ADD; }
-  .dot-gray { background: rgba(255,255,255,.3); }
-  .sidebar-footer { margin-top: auto; padding: 14px 18px; border-top: 1px solid rgba(255,255,255,.1); font-size: 10px; color: rgba(255,255,255,.35); }
-  .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #63991A; margin-right: 4px; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
-
-  /* TOPBAR */
-  .topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-  .topbar-title { font-size: 16px; font-weight: 600; color: var(--navy); }
-  .topbar-sub { font-size: 12px; color: var(--muted); margin-top: 1px; }
-  .topbar-right { display: flex; gap: 10px; align-items: center; }
-  .chip { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 4px; }
-  .chip-green { background: var(--green-bg); color: var(--green); }
-  .chip-amber { background: var(--amber-bg); color: var(--amber); }
-  .chip-red { background: var(--red-bg); color: var(--red); }
-  .chip-blue { background: var(--blue-bg); color: var(--blue); }
-  .chip-navy { background: var(--navy); color: #fff; }
-
-  /* CONTENT */
-  .content { padding: 28px; flex: 1; }
-  .pane { display: none; }
-  .pane.active { display: block; }
-
-  /* STAT CARDS */
-  .stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
-  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
-  .stat-card.accent { background: var(--navy); border-color: var(--navy); }
-  .stat-card.orange { background: var(--orange); border-color: var(--orange); }
-  .stat-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
-  .stat-card.accent .stat-label, .stat-card.orange .stat-label { color: rgba(255,255,255,.6); }
-  .stat-num { font-size: 22px; font-weight: 700; color: var(--navy); line-height: 1.1; }
-  .stat-card.accent .stat-num, .stat-card.orange .stat-num { color: #fff; }
-  .stat-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
-  .stat-card.accent .stat-sub, .stat-card.orange .stat-sub { color: rgba(255,255,255,.5); }
-
-  /* GRID */
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  /* KPI STRIP */
+  .kpi-strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
+  .kpi {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px; box-shadow: var(--shadow-sm);
+    position: relative; overflow: hidden;
+  }
+  .kpi::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--accent); opacity: 0.5; border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .kpi-green .kpi-value { color: var(--accent); }
+  .kpi-green::after { opacity: 1; }
+  .kpi-yellow .kpi-value { color: var(--yellow); }
+  .kpi-yellow::after { background: var(--yellow); opacity: 0.8; }
+  .kpi-blue .kpi-value { color: var(--blue); }
+  .kpi-blue::after { background: var(--blue); opacity: 0.8; }
+  .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+  .kpi-value { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; margin-bottom: 4px; }
+  .kpi-sub { font-size: 11px; color: var(--dim); }
 
   /* CARDS */
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
-  .card-title { font-size: 12px; font-weight: 600; color: var(--navy); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+  .card-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.7px; text-transform: uppercase;
+    color: var(--dim); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
 
-  /* TABLE */
-  table { width: 100%; border-collapse: collapse; }
-  th { font-size: 11px; font-weight: 600; text-align: left; padding: 8px 10px; background: var(--navy); color: #fff; }
-  td { font-size: 12.5px; padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  tr:last-child td { border-bottom: none; }
-  tr:nth-child(even) td { background: var(--surface2); }
-  .td-muted { color: var(--muted); font-size: 12px; }
-  .td-bold { font-weight: 600; }
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
 
-  /* PROGRESS BAR */
-  .bar-wrap { background: var(--surface2); border-radius: 4px; height: 7px; overflow: hidden; margin-top: 4px; }
-  .bar-fill { height: 100%; border-radius: 4px; }
+  /* TOGGLE SECTIONS */
+  .section {
+    border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px;
+    background: var(--surface); overflow: hidden; transition: box-shadow 0.2s;
+  }
+  .section:hover { box-shadow: var(--shadow); }
+  .section-header {
+    padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; transition: background 0.15s; user-select: none;
+  }
+  .section-header:hover { background: var(--accent-bg); }
+  .section.open .section-header { background: var(--accent-bg); }
+  .section-title { font-size: 13.5px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .section-num {
+    font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent);
+    background: var(--accent-bg); border: 1px solid #a8d5bb; padding: 1px 7px; border-radius: 4px;
+  }
+  .section-chevron {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--surface2);
+    border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--muted); transition: all 0.2s; flex-shrink: 0;
+  }
+  .section:hover .section-chevron, .section.open .section-chevron {
+    background: var(--accent); border-color: var(--accent); color: white; transform: rotate(90deg);
+  }
+  .section-body {
+    display: none; padding: 16px 18px 20px; border-top: 1px solid var(--border);
+    font-size: 13.5px; line-height: 1.75; color: var(--muted);
+  }
+  .section-body p { margin-bottom: 10px; }
+  .section-body p:last-child { margin-bottom: 0; }
+  .section-body strong { color: var(--text); font-weight: 600; }
+  .section.open .section-body { display: block; }
 
-  /* SLIDERS */
-  .slider-section { margin-bottom: 12px; }
-  .slider-label { display: flex; justify-content: space-between; margin-bottom: 5px; }
-  .slider-label span:first-child { font-size: 12px; color: var(--muted); }
-  .slider-label span:last-child { font-size: 12px; font-weight: 600; color: var(--navy); }
-  input[type=range] { width: 100%; accent-color: var(--navy); height: 4px; }
-  .econ-results { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
-  .econ-box { background: var(--surface2); border-radius: 8px; padding: 12px; text-align: center; }
-  .econ-box.highlight { background: var(--blue-bg); }
-  .econ-box .e-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
-  .econ-box .e-num { font-size: 20px; font-weight: 700; color: var(--navy); }
-  .econ-box.highlight .e-num { color: var(--blue); }
+  .expand-btns { display: flex; gap: 8px; margin-bottom: 14px; }
+  .expand-btn {
+    font-size: 11px; font-weight: 500; color: var(--accent); cursor: pointer;
+    padding: 5px 12px; border: 1px solid #a8d5bb; border-radius: 100px;
+    background: var(--accent-bg); font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+  }
+  .expand-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
 
-  /* RISK */
-  .risk-sev { font-weight: 700; font-size: 11px; }
-  .risk-bar { height: 5px; border-radius: 3px; background: var(--surface2); margin-top: 3px; overflow: hidden; }
-  .risk-fill { height: 100%; border-radius: 3px; }
+  /* TABLES */
+  .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .tbl th {
+    text-align: left; padding: 9px 14px; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.5px; text-transform: uppercase; color: var(--dim);
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .tbl td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--muted); vertical-align: top; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .tbl tr:hover td { background: var(--accent-bg); }
+  .tbl .num { text-align: right; font-family: 'DM Mono', monospace; font-size: 12px; }
+  .tbl .strong td { color: var(--text); font-weight: 600; background: var(--surface2); }
+  .tbl .accent td { color: var(--accent); font-weight: 600; }
 
-  /* VERDICT BOX */
-  .verdict { background: var(--blue-bg); border-left: 4px solid var(--blue); border-radius: 0 8px 8px 0; padding: 12px 16px; font-size: 12.5px; color: #0C447C; margin: 12px 0; line-height: 1.6; }
-  .verdict-orange { background: var(--orange-light); border-left: 4px solid var(--orange); border-radius: 0 8px 8px 0; padding: 14px 16px; font-size: 13px; color: #5C2A0D; margin: 16px 0; line-height: 1.7; }
+  /* SCORE BARS */
+  .score-grid { display: flex; flex-direction: column; gap: 12px; }
+  .score-row { display: grid; grid-template-columns: 180px 1fr 48px; align-items: center; gap: 14px; }
+  .score-label { font-size: 13px; color: var(--muted); }
+  .score-track { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
+  .score-bar { height: 100%; border-radius: 3px; transition: width 1s cubic-bezier(0.4,0,0.2,1); }
+  .score-val { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; text-align: right; }
+
+  /* HIGHLIGHTS */
+  .highlight {
+    padding: 14px 16px; border-left: 3px solid var(--accent);
+    background: var(--accent-bg); border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 12px 0; font-size: 13px; color: var(--muted); line-height: 1.65;
+  }
+  .highlight strong { color: var(--text); display: block; margin-bottom: 3px; font-weight: 600; }
+  .highlight.warn { border-left-color: var(--yellow); background: var(--yellow-bg); }
+  .highlight.danger { border-left-color: var(--red); background: var(--red-bg); }
+
+  /* RISK SEVERITY */
+  .risk-severity {
+    display: inline-flex; align-items: center; gap: 5px; padding: 2px 10px;
+    border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+  }
+  .sev-critical { background: var(--red-bg); color: var(--red); border: 1px solid #f5b8b3; }
+  .sev-high   { background: var(--red-bg);    color: var(--red);    border: 1px solid #f5b8b3; }
+  .sev-medium { background: var(--yellow-bg); color: var(--yellow); border: 1px solid #f0d49a; }
+  .sev-low    { background: var(--accent-bg); color: var(--accent); border: 1px solid #a8d5bb; }
+
+  /* TEAM */
+  .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .team-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s, border-color 0.2s;
+  }
+  .team-card:hover { box-shadow: var(--shadow); border-color: #a8d5bb; }
+  .team-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .team-role { font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  .team-bio { font-size: 13px; line-height: 1.7; color: var(--muted); }
+  .team-highlight { margin-top: 12px; padding: 10px 12px; background: var(--accent-bg); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; font-size: 12px; color: var(--muted); }
+
+  /* UNIT ECON SLIDERS */
+  .slider-section { margin-bottom: 14px; }
+  .slider-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .slider-row label { font-size: 13px; color: var(--muted); }
+  .slider-row .slider-val { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; color: var(--accent); }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .econ-result-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 16px; }
+  .econ-box { background: var(--surface2); border-radius: var(--radius); padding: 14px; text-align: center; border: 1px solid var(--border); }
+  .econ-box.highlight-box { background: var(--accent-bg); border-color: #a8d5bb; }
+  .econ-box-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--dim); margin-bottom: 6px; }
+  .econ-box-val { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--text); }
+  .econ-box.highlight-box .econ-box-val { color: var(--accent); }
+
+  /* STAGE DOTS */
+  .stage-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  .dot-green  { background: var(--accent); }
+  .dot-blue   { background: var(--blue); }
+  .dot-yellow { background: var(--yellow); }
+  .dot-orange { background: #e67e22; }
+  .dot-gray   { background: var(--dim); }
 
   /* WHOOP COMPARE */
-  .compare-table { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-  .compare-row { display: grid; grid-template-columns: 160px 1fr 1fr; }
-  .compare-row:not(:last-child) { border-bottom: 1px solid var(--border); }
-  .compare-cell { padding: 10px 14px; font-size: 12.5px; }
-  .compare-head .compare-cell { background: var(--surface2); font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
-  .compare-cell.dimension { font-weight: 600; font-size: 12px; }
-  .compare-cell.whoop-bad { color: var(--red); }
-  .compare-cell.clair-good { color: var(--green); }
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .compare-table th { text-align: left; padding: 9px 14px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--dim); background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .compare-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: var(--accent-bg); }
+  .compare-table .col-dim { font-weight: 600; color: var(--text); width: 160px; }
+  .compare-table .col-bad { color: var(--red); }
+  .compare-table .col-good { color: var(--accent); font-weight: 500; }
 
-  /* FUNNEL */
-  .funnel-item { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-  .funnel-lbl { font-size: 12px; color: var(--muted); width: 120px; flex-shrink: 0; }
-  .funnel-val { font-size: 13px; font-weight: 600; width: 70px; flex-shrink: 0; }
-  .funnel-bar { flex: 1; }
+  /* MEMO */
+  .memo { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); max-width: 760px; margin: 0 auto; }
+  .memo-header {
+    padding: 32px 40px 24px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--accent-bg) 0%, var(--surface) 60%);
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .memo-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+  .memo-meta { display: grid; grid-template-columns: auto 1fr; gap: 5px 20px; }
+  .memo-meta-key { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--dim); padding-top: 2px; }
+  .memo-meta-val { font-size: 13px; color: var(--muted); }
+  .memo-body { padding: 32px 40px; }
+  .memo-section-title {
+    font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--text);
+    margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .memo-section-title:first-child { margin-top: 0; }
+  .memo-section-title::before { content: ''; width: 6px; height: 6px; background: var(--accent); border-radius: 50%; flex-shrink: 0; }
+  .memo-prose { font-size: 14px; line-height: 1.85; color: var(--muted); }
+  .memo-prose p { margin-bottom: 14px; }
+  .memo-prose p:last-child { margin-bottom: 0; }
+  .memo-prose strong { color: var(--text); font-weight: 600; }
+  .memo-verdict {
+    margin-top: 28px; padding: 24px 28px; background: var(--accent-bg);
+    border: 1px solid #a8d5bb; border-left: 4px solid var(--accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  .memo-verdict-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+  .memo-verdict-body { font-size: 14px; line-height: 1.8; color: var(--muted); }
 
-  /* NEXT STEPS */
-  .step { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
-  .step:last-child { border-bottom: none; }
-  .step-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; margin-top: 1px; }
-  .step-num.crit { background: var(--red); }
-  .step-num.high { background: var(--orange); }
-  .step-num.med { background: var(--blue); }
-  .step-body { flex: 1; }
-  .step-title { font-size: 13px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
-  .step-desc { font-size: 12px; color: var(--muted); }
+  /* FUNNEL BARS */
+  .funnel-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .funnel-label { font-size: 12px; color: var(--muted); width: 130px; flex-shrink: 0; }
+  .funnel-val { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; width: 56px; text-align: right; flex-shrink: 0; }
+  .funnel-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; border: 1px solid var(--border); }
+  .funnel-fill { height: 100%; border-radius: 3px; background: var(--accent); }
 
-  /* PARTNER LOGOS */
-  .partner-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-  .partner-tag { font-size: 11px; padding: 4px 10px; border-radius: 4px; font-weight: 500; }
-
-  /* LTV SCENARIOS */
-  .scenario-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  .scenario { background: var(--surface2); border-radius: 8px; padding: 14px; text-align: center; border: 2px solid transparent; }
-  .scenario.expected { border-color: var(--blue); background: var(--blue-bg); }
-  .scenario .sc-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; }
-  .scenario .sc-sub { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-  .scenario .sc-num { font-size: 24px; font-weight: 700; color: var(--navy); }
-  .scenario.expected .sc-num { color: var(--blue); }
-  .expected-badge { display: inline-block; background: var(--blue); color: #fff; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-bottom: 6px; }
-
-  /* SECTION HEADER */
-  .section-hdr { font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
-  .section-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
-
-  /* RESPONSIVE */
-  @media (max-width: 900px) {
-    .sidebar { width: 180px; }
-    .main { margin-left: 180px; }
-    .stat-grid { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 768px) {
+    .container { padding: 20px 16px; }
+    .header { padding: 0 16px; }
+    .nav { padding: 0 16px; }
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .grid-2, .grid-3, .team-grid { grid-template-columns: 1fr; }
+    .score-row { grid-template-columns: 140px 1fr 40px; }
+    .header-badges { display: none; }
+    .memo-header, .memo-body { padding: 20px; }
   }
 </style>
 </head>
 <body>
-<div class="shell">
 
-<!-- SIDEBAR -->
-<nav class="sidebar">
-  <div class="sidebar-logo">
-    <div class="co">Clair Health</div>
-    <div class="fund">Collab Fund Diligence</div>
-    <div class="badge">SEED · APRIL 2026</div>
-  </div>
-
-  <div class="sidebar-section">
-    <div class="sidebar-label">Overview</div>
-    <div class="nav-item active" onclick="show('traction',this)">
-      <span class="nav-dot dot-green"></span> Traction
+<div class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="logo">C</div>
+      <div>
+        <div class="header-title">Clair Health</div>
+        <div class="header-sub">Seed Diligence · Collaborative Fund · April 2026</div>
+      </div>
     </div>
-    <div class="nav-item" onclick="show('unit',this)">
-      <span class="nav-dot dot-blue"></span> Unit Economics
+    <div class="header-badges">
+      <span class="badge badge-green">● Strong Traction</span>
+      <span class="badge badge-yellow">⚠ Pricing Discrepancy</span>
+      <span class="badge badge-blue">Intro: Speedrun Demo Day</span>
     </div>
   </div>
+</div>
 
-  <div class="sidebar-section">
-    <div class="sidebar-label">Diligence</div>
-    <div class="nav-item" onclick="show('science',this)">
-      <span class="nav-dot dot-blue"></span> Science & Tech
-    </div>
-    <div class="nav-item" onclick="show('whoop',this)">
-      <span class="nav-dot dot-amber"></span> Whoop Question
-    </div>
-    <div class="nav-item" onclick="show('risk',this)">
-      <span class="nav-dot dot-red"></span> Risk Register
-    </div>
-  </div>
+<div class="nav">
+  <div class="nav-tab active" onclick="switchTab('overview', this)"><span class="tab-num">1</span>Overview</div>
+  <div class="nav-tab" onclick="switchTab('team', this)"><span class="tab-num">2</span>Team</div>
+  <div class="nav-tab" onclick="switchTab('product', this)"><span class="tab-num">3</span>Product & Market</div>
+  <div class="nav-tab" onclick="switchTab('financials', this)"><span class="tab-num">4</span>Financials</div>
+  <div class="nav-tab" onclick="switchTab('risks', this)"><span class="tab-num">5</span>Risk Register</div>
+  <div class="nav-tab" onclick="switchTab('memo', this)"><span class="tab-num">6</span>Investment Memo</div>
+</div>
 
-  <div class="sidebar-section">
-    <div class="sidebar-label">Action</div>
-    <div class="nav-item" onclick="show('nextsteps',this)">
-      <span class="nav-dot dot-gray"></span> Next Steps
+<!-- ═══ OVERVIEW ═══ -->
+<div id="tab-overview" class="tab-content active">
+<div class="container">
+  <div class="kpi-strip">
+    <div class="kpi kpi-green">
+      <div class="kpi-label">D2C Revenue</div>
+      <div class="kpi-value">$811K</div>
+      <div class="kpi-sub">58 days post-launch</div>
     </div>
-  </div>
-
-  <div class="sidebar-footer">
-    <span class="live-dot"></span> wearclair.com/traction<br>
-    Last synced Apr 3, 2026
-  </div>
-</nav>
-
-<!-- MAIN -->
-<div class="main">
-
-  <div class="topbar">
-    <div>
-      <div class="topbar-title">Clair Health, Inc.</div>
-      <div class="topbar-sub">World's First Wearable Hormone Monitor · Seed · Speedrun / Collab Fund</div>
+    <div class="kpi kpi-blue">
+      <div class="kpi-label">B2B MOUs (ARR)</div>
+      <div class="kpi-value">$20.6M</div>
+      <div class="kpi-sub">100,200 devices contracted</div>
     </div>
-    <div class="topbar-right">
-      <span class="chip chip-green">$20.6M B2B ARR</span>
-      <span class="chip chip-navy">Lead Opp. Available</span>
-      <span class="chip chip-amber">Close: ~1 wk post demo day</span>
+    <div class="kpi">
+      <div class="kpi-label">Pre-orders (live)</div>
+      <div class="kpi-value">4,388</div>
+      <div class="kpi-sub">Avg 75.5 / day</div>
+    </div>
+    <div class="kpi kpi-yellow">
+      <div class="kpi-label">⚠ Pricing</div>
+      <div class="kpi-value">$169?</div>
+      <div class="kpi-sub">Notes vs. $369 deck — verify</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Seed Round</div>
+      <div class="kpi-value">$7–10M</div>
+      <div class="kpi-sub">$3M committed · lead open</div>
     </div>
   </div>
 
-  <div class="content">
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">Company Snapshot</div>
+      <table class="tbl">
+        <tr><td style="color:var(--dim);width:120px;font-size:12px;font-weight:500">Company</td><td>Clair Health, Inc.</td></tr>
+        <tr><td style="color:var(--dim);font-size:12px;font-weight:500">Founded</td><td>2025 · Delaware C-Corp</td></tr>
+        <tr><td style="color:var(--dim);font-size:12px;font-weight:500">HQ</td><td>San Francisco, CA</td></tr>
+        <tr><td style="color:var(--dim);font-size:12px;font-weight:500">Category</td><td>Femtech · Wearable Health · Consumer Hardware</td></tr>
+        <tr><td style="color:var(--dim);font-size:12px;font-weight:500">Stage</td><td>Seed · Pre-seed led by Speedrun + Bridge Capital</td></tr>
+        <tr><td style="color:var(--dim);font-size:12px;font-weight:500">Stealth exit</td><td>February 3, 2026</td></tr>
+        <tr><td style="color:var(--dim);font-size:12px;font-weight:500">Live dashboard</td><td>wearclair.com/traction</td></tr>
+        <tr><td style="color:var(--dim);font-size:12px;font-weight:500">Reviewer</td><td>Craig W., Collaborative Fund</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">What Clair Does</div>
+      <p style="font-size:13.5px;line-height:1.75;color:var(--muted);margin-bottom:12px;">Clair is building the world's first wearable continuous hormone monitor — a wrist-worn device that tracks estrogen, progesterone, LH, and FSH passively, without blood, urine, or saliva. The device uses a proprietary 10-biosensor stack and ML-driven modeling of the HPO axis to infer hormone levels in real time.</p>
+      <p style="font-size:13.5px;line-height:1.75;color:var(--muted);margin-bottom:12px;">Today, understanding hormones requires <strong style="color:var(--text)">blood tests months apart, costing $200–500 out of pocket</strong>. Existing wearables (Whoop, Oura, Apple Watch) ignore hormonal signals entirely. Clair creates an entirely new category — analogous to how CGMs created their own market beyond traditional glucose testing.</p>
+      <p style="font-size:13.5px;line-height:1.75;color:var(--muted)">Primary demographics: <strong style="color:var(--text)">fertility and perimenopause</strong> — both segments with zero continuous monitoring solutions available today.</p>
+    </div>
+  </div>
 
-    <!-- STAT STRIP (always visible) -->
-    <div class="stat-grid">
-      <div class="stat-card orange">
-        <div class="stat-label">D2C Revenue</div>
-        <div class="stat-num">$811,780</div>
-        <div class="stat-sub">58 days out of stealth</div>
+  <div class="card">
+    <div class="card-title">Collab Thesis Fit</div>
+    <div class="grid-3">
+      <div class="highlight"><strong>Good for You</strong>Continuous hormone monitoring gives women actionable health intelligence they've never had — fertility, perimenopause, cardiovascular risk, athletic performance. The founding insight: post-menopausal women requesting CGM prescriptions to surface cardiovascular risk their doctors were missing.</div>
+      <div class="highlight"><strong>Good for the World</strong>$100B in women's health outcomes turns on four hormones nobody is tracking. PCOS and endometriosis take 7–12 years to diagnose on average. Post-menopausal CVD risk doubles but symptoms don't match standard screening. Clair is the diagnostic layer this patient population has never had.</div>
+      <div class="highlight"><strong>Portfolio Context</strong>We led Whoop's Series G and have been investors since 2013 — giving us a uniquely informed view on wearable hardware moats and the competitive question specifically. Craig is an angel in Maven Clinic. Rhythm Health (at-home blood testing) is in the portfolio.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Diligence Scorecard</div>
+    <div class="score-grid">
+      <div class="score-row"><div class="score-label">Founding Team</div><div class="score-track"><div class="score-bar" data-w="88" style="width:0%;background:var(--accent)"></div></div><div class="score-val" style="color:var(--accent)">8.8</div></div>
+      <div class="score-row"><div class="score-label">Early Traction</div><div class="score-track"><div class="score-bar" data-w="90" style="width:0%;background:var(--accent)"></div></div><div class="score-val" style="color:var(--accent)">9.0</div></div>
+      <div class="score-row"><div class="score-label">Market Opportunity</div><div class="score-track"><div class="score-bar" data-w="85" style="width:0%;background:var(--accent)"></div></div><div class="score-val" style="color:var(--accent)">8.5</div></div>
+      <div class="score-row"><div class="score-label">Technical Differentiation</div><div class="score-track"><div class="score-bar" data-w="80" style="width:0%;background:var(--blue)"></div></div><div class="score-val" style="color:var(--blue)">8.0</div></div>
+      <div class="score-row"><div class="score-label">Unit Economics</div><div class="score-track"><div class="score-bar" data-w="78" style="width:0%;background:var(--blue)"></div></div><div class="score-val" style="color:var(--blue)">7.8</div></div>
+      <div class="score-row"><div class="score-label">Scientific Validation</div><div class="score-track"><div class="score-bar" data-w="62" style="width:0%;background:var(--yellow)"></div></div><div class="score-val" style="color:var(--yellow)">6.2</div></div>
+      <div class="score-row"><div class="score-label">Competitive Moat</div><div class="score-track"><div class="score-bar" data-w="72" style="width:0%;background:var(--yellow)"></div></div><div class="score-val" style="color:var(--yellow)">7.2</div></div>
+      <div class="score-row"><div class="score-label">Hardware Execution Risk</div><div class="score-track"><div class="score-bar" data-w="50" style="width:0%;background:#e67e22"></div></div><div class="score-val" style="color:#e67e22">5.0</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ TEAM ═══ -->
+<div id="tab-team" class="tab-content">
+<div class="container">
+  <div class="card">
+    <div class="card-title">Co-Founding Team</div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-name">Jenny Duan</div>
+        <div class="team-role">CEO & Co-Founder</div>
+        <div class="team-bio">Growth and marketing at early-stage startups. Founded NEXT Creator Collective. Consumer technology experience at Daydream (fashion tech) and early-stage investing at Anthos Capital. Stanford graduate. Met Abhinav on a flight from spring break — identified the gap in women's health monitoring from direct conversations with post-menopausal women seeking CGM prescriptions for cardiovascular risk.</div>
+        <div class="team-highlight">Brings consumer GTM and brand instincts to a technical product — exactly what a hardware/subscription hybrid needs to break through to mainstream adoption.</div>
       </div>
-      <div class="stat-card accent">
-        <div class="stat-label">B2B MOUs (ARR)</div>
-        <div class="stat-num">$20.6M</div>
-        <div class="stat-sub">100,200 devices contracted</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Pre-orders (live)</div>
-        <div class="stat-num">4,388</div>
-        <div class="stat-sub">Today: 23 · Avg: 75.5/day</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Waitlist (live)</div>
-        <div class="stat-num">18,018</div>
-        <div class="stat-sub">24.4% → preorder rate</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Raise</div>
-        <div class="stat-num">$7–10M</div>
-        <div class="stat-sub">$3M committed · lead open</div>
+      <div class="team-card">
+        <div class="team-name">Abhinav Agarwal</div>
+        <div class="team-role">CTO & Co-Founder</div>
+        <div class="team-bio">Invented the first non-invasive CGM at KOS AI — raised $100M, guided through FDA de novo clearance, and company is being acquired by a European pharmaceutical company. Prior roles at Apple (pediatric eye detection AI study), ad tech, and EEG-based wearables. Published researcher — Best Paper at ICAIRME '25 (Stanford). This is the critical technical credential: he has executed the closest possible analogue to what Clair is attempting.</div>
+        <div class="team-highlight">The non-invasive CGM → wearable hormone monitor parallel is nearly direct. Abhinav has done this before in a harder regulatory environment.</div>
       </div>
     </div>
+  </div>
 
-    <!-- TRACTION -->
-    <div id="pane-traction" class="pane active">
-      <div class="section-hdr">Traction</div>
-      <div class="section-sub">58 days since Feb 3, 2026 launch · Live metrics from wearclair.com/traction</div>
+  <div class="card">
+    <div class="card-title">Supporting Team & Network</div>
+    <table class="tbl">
+      <thead><tr><th>Role</th><th>Background</th><th>Relevance</th></tr></thead>
+      <tbody>
+        <tr><td><strong>VP of Quality</strong></td><td>15 years at Johnson & Johnson and GE Healthcare</td><td>Leads regulatory strategy; FDA pre-submission already filed</td></tr>
+        <tr><td><strong>Advisor Network</strong></td><td>Meta, FDA, Yale School of Medicine, Apple, Stanford Medicine, Eight Sleep</td><td>Clinical credibility + regulatory relationships</td></tr>
+        <tr><td><strong>Manufacturing Partner</strong></td><td>Tier-1 manufacturer · Shenzhen, India, Mexico</td><td>Multi-geography footprint mitigates tariff concentration</td></tr>
+      </tbody>
+    </table>
+  </div>
 
-      <div class="grid2">
-        <div class="card">
-          <div class="card-title">Pre-order funnel</div>
-          <div class="funnel-item">
-            <div class="funnel-lbl">Waitlist</div>
-            <div class="funnel-val">18,018</div>
-            <div class="funnel-bar">
-              <div class="bar-wrap"><div class="bar-fill" style="width:100%;background:#D3D1C7"></div></div>
-            </div>
-          </div>
-          <div class="funnel-item">
-            <div class="funnel-lbl">Pre-orders</div>
-            <div class="funnel-val">4,388</div>
-            <div class="funnel-bar">
-              <div class="bar-wrap"><div class="bar-fill" style="width:24.4%;background:#185FA5"></div></div>
-            </div>
-          </div>
-          <div style="font-size:11px;color:var(--muted);margin-top:8px">24.4% conversion rate — strong for hardware pre-launch</div>
-          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
-            <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:10px">Weekly cadence</div>
-            <div style="display:flex;gap:24px">
-              <div>
-                <div style="font-size:11px;color:var(--muted)">Pre-orders this week</div>
-                <div style="font-size:20px;font-weight:700">463 <span style="font-size:11px;color:var(--red);font-weight:400">▼ vs 528</span></div>
-              </div>
-              <div>
-                <div style="font-size:11px;color:var(--muted)">Signups this week</div>
-                <div style="font-size:20px;font-weight:700">1,847 <span style="font-size:11px;color:var(--red);font-weight:400">▼ vs 2,385</span></div>
-              </div>
-            </div>
-            <div style="font-size:11px;color:var(--muted);margin-top:8px">Week-on-week decel worth monitoring. Demo day should re-accelerate. Watch post-demo trajectory closely.</div>
-          </div>
+  <div class="card">
+    <div class="card-title">Team Assessment</div>
+    <table class="tbl">
+      <thead><tr><th>Dimension</th><th>Signal</th><th>Rating</th></tr></thead>
+      <tbody>
+        <tr><td>Technical depth</td><td>Abhinav: invented first non-invasive CGM, raised $100M, through FDA de novo</td><td><span class="badge badge-green">Exceptional</span></td></tr>
+        <tr><td>Consumer instinct</td><td>Jenny: consumer GTM background; NEXT Creator Collective; Stanford</td><td><span class="badge badge-green">Strong</span></td></tr>
+        <tr><td>Regulatory capability</td><td>VP Quality (J&J/GE); FDA pre-submission already filed; Class 1 launch ready</td><td><span class="badge badge-green">Strong</span></td></tr>
+        <tr><td>Domain fit</td><td>Founding insight from direct patient observation; CGM-to-hormone parallel is nearly direct</td><td><span class="badge badge-green">Authentic</span></td></tr>
+        <tr><td>Hardware execution track record</td><td>Abhinav has done it once; Jenny has not; team is early</td><td><span class="badge badge-yellow">Monitor</span></td></tr>
+        <tr><td>First-time CEO risk</td><td>Jenny building company for first time; Abhinav was CTO not CEO at KOS</td><td><span class="badge badge-yellow">Acceptable</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ═══ PRODUCT & MARKET ═══ -->
+<div id="tab-product" class="tab-content">
+<div class="container">
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-title">Technology Architecture</div>
+      <div class="expand-btns">
+        <button class="expand-btn" onclick="expandAll('tech')">Expand all</button>
+        <button class="expand-btn" onclick="collapseAll('tech')">Collapse all</button>
+      </div>
+      <div class="section open" data-group="tech">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title"><span class="section-num">01</span>10-Sensor Biophysical Fusion</div>
+          <div class="section-chevron">▶</div>
         </div>
-
-        <div class="card">
-          <div class="card-title">B2B partner breakdown (244 inquiries)</div>
-          <div class="funnel-item"><div class="funnel-lbl">Healthcare providers</div><div class="funnel-val">108</div><div class="funnel-bar"><div class="bar-wrap"><div class="bar-fill" style="width:44%;background:#185FA5"></div></div></div></div>
-          <div class="funnel-item"><div class="funnel-lbl">Wellness professionals</div><div class="funnel-val">93</div><div class="funnel-bar"><div class="bar-wrap"><div class="bar-fill" style="width:38%;background:#3B6D11"></div></div></div></div>
-          <div class="funnel-item"><div class="funnel-lbl">Research institutions</div><div class="funnel-val">28</div><div class="funnel-bar"><div class="bar-wrap"><div class="bar-fill" style="width:11%;background:#854F0B"></div></div></div></div>
-          <div class="funnel-item"><div class="funnel-lbl">Enterprise / HR</div><div class="funnel-val">15</div><div class="funnel-bar"><div class="bar-wrap"><div class="bar-fill" style="width:6%;background:#993556"></div></div></div></div>
-          <div style="font-size:11px;color:var(--muted);margin-top:12px">By size: 198 orgs &lt;50 employees, 27 at 51–500, 19 at 500+</div>
-          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
-            <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Key LOIs include</div>
-            <div class="partner-grid">
-              <span class="partner-tag chip-blue">Kindbody (IVF)</span>
-              <span class="partner-tag chip-green">YMCA</span>
-              <span class="partner-tag chip-blue">FASTR (female athletes)</span>
-              <span class="partner-tag chip-blue">Joi + Blokes</span>
-              <span class="partner-tag chip-blue">bird & be</span>
-              <span class="partner-tag chip-blue">Ovom Health</span>
-              <span class="partner-tag chip-blue">Dama Health</span>
-              <span class="partner-tag chip-amber">UK · Australia · Brazil</span>
-            </div>
-          </div>
+        <div class="section-body">
+          <p>Clair uses a <strong>10-biosensor stack</strong> — versus 3–4 in most consumer wearables — including a non-multiplexed PPG sensor and custom-developed sensors. The core IP is a mathematical model of the HPO (hypothalamic-pituitary-ovarian) axis using ML and differential equations to infer hormone levels from physiological signals.</p>
+          <p>Women's hormones are a <strong>homeodynamic system</strong>, not homeostatic — they require continuous monitoring to capture meaningfully. This is why point-in-time blood tests miss the picture.</p>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-title">Press & traction signals</div>
-        <div class="partner-grid">
-          <span class="partner-tag chip-blue">Forbes</span>
-          <span class="partner-tag chip-blue">Fitt Insider</span>
-          <span class="partner-tag chip-blue">Wellworthy</span>
-          <span class="partner-tag chip-blue">Athletech News</span>
-          <span class="partner-tag chip-green">HHS Women's Health Conference 2026</span>
-          <span class="partner-tag chip-green">Best Paper ICAIRME '25 (Abhinav)</span>
+      <div class="section" data-group="tech">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title"><span class="section-num">02</span>Why Not ISF Patches or Sweat Sensing</div>
+          <div class="section-chevron">▶</div>
+        </div>
+        <div class="section-body">
+          <p><strong>Interstitial fluid (ISF) patches rejected:</strong> Hormone concentrations in ISF are 200,000–1,000,000× lower than glucose — far below reliable detection thresholds for wearable sensors.</p>
+          <p><strong>Sweat electrochemical sensing rejected:</strong> Sweat degrades sensors rapidly, making this approach viable only in controlled lab environments. Not commercially viable as a continuous wear device.</p>
         </div>
       </div>
-    </div>
-
-    <!-- UNIT ECONOMICS -->
-    <div id="pane-unit" class="pane">
-      <div class="section-hdr">Unit Economics</div>
-      <div class="section-sub">Adjust assumptions — model updates in real time</div>
-
-      <div class="card">
-        <div class="card-title">Interactive model</div>
-        <div class="slider-section">
-          <div class="slider-label"><span>Device retail price</span><span id="v-price">$369</span></div>
-          <input type="range" min="169" max="499" step="10" value="369" id="s-price" oninput="calc()">
+      <div class="section" data-group="tech">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title"><span class="section-num">03</span>Clinical Validation Status</div>
+          <div class="section-chevron">▶</div>
         </div>
-        <div class="slider-section">
-          <div class="slider-label"><span>COGS at scale (100K+ units)</span><span id="v-cogs">$37</span></div>
-          <input type="range" min="20" max="100" step="1" value="37" id="s-cogs" oninput="calc()">
-        </div>
-        <div class="slider-section">
-          <div class="slider-label"><span>Monthly subscription</span><span id="v-sub">$9.99</span></div>
-          <input type="range" min="4.99" max="24.99" step="1" value="9.99" id="s-sub" oninput="calc()">
-        </div>
-        <div class="slider-section">
-          <div class="slider-label"><span>Retention (months)</span><span id="v-ret">36 mo</span></div>
-          <input type="range" min="6" max="60" step="1" value="36" id="s-ret" oninput="calc()">
-        </div>
-        <div class="econ-results">
-          <div class="econ-box">
-            <div class="e-label">HW gross margin $</div>
-            <div class="e-num" id="r-hwm">$332</div>
-          </div>
-          <div class="econ-box">
-            <div class="e-label">HW margin %</div>
-            <div class="e-num" id="r-hwpct">90%</div>
-          </div>
-          <div class="econ-box">
-            <div class="e-label">Subscription revenue</div>
-            <div class="e-num" id="r-sub">$360</div>
-          </div>
-          <div class="econ-box highlight">
-            <div class="e-label">Gross LTV</div>
-            <div class="e-num" id="r-ltv">$692</div>
-          </div>
-          <div class="econ-box">
-            <div class="e-label">Payback period</div>
-            <div class="e-num" id="r-payback">At sale</div>
-          </div>
-          <div class="econ-box">
-            <div class="e-label">Sub LTV (standalone)</div>
-            <div class="e-num" id="r-sub-ltv">$360</div>
-          </div>
-        </div>
-        <div style="margin-top:12px;padding:10px;background:var(--amber-bg);border-radius:6px;font-size:11px;color:var(--amber)">
-          ⚠ Note: Meeting notes reference a $169 device price; deck shows $369. Clarify before finalizing model. Use slider above to compare scenarios.
+        <div class="section-body">
+          <p>In-house pilot study: <strong>42 women, 252 cycles, 127 complete cycles</strong>. Results: 94% accuracy for cycle tracking (vs. Ava Fertility's 87%); MAE = 1.64 mIU/mL for LH; MAE = 2.07 µg/mL for PDG. Validated against urine-based at-home metabolite tests — the current at-home gold standard.</p>
+          <p><strong>Blood serum study currently ongoing</strong> — comparing results to clinical blood draws. This is the decisive next validation milestone. Full technical whitepaper available under mNDA.</p>
+          <p>Research presented at the 2026 HHS National Conference on Women's Health.</p>
         </div>
       </div>
-
-      <div class="section-hdr" style="font-size:15px;margin-bottom:12px">LTV scenarios (from deck)</div>
-      <div class="scenario-grid">
-        <div class="scenario">
-          <div class="sc-label">Conservative</div>
-          <div class="sc-sub">24-month retention</div>
-          <div class="sc-num">$595.76</div>
+      <div class="section" data-group="tech">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="section-title"><span class="section-num">04</span>Regulatory Strategy</div>
+          <div class="section-chevron">▶</div>
         </div>
-        <div class="scenario expected">
-          <div class="expected-badge">EXPECTED</div>
-          <div class="sc-label">Base case</div>
-          <div class="sc-sub">36-month retention</div>
-          <div class="sc-num">$727.64</div>
-        </div>
-        <div class="scenario">
-          <div class="sc-label">Optimistic</div>
-          <div class="sc-sub">48-month retention</div>
-          <div class="sc-num">$859.52</div>
-        </div>
-      </div>
-
-      <div style="margin-top:20px">
-        <table>
-          <tr><th>Metric</th><th>Value</th></tr>
-          <tr><td>Device retail price</td><td class="td-bold">$369</td></tr>
-          <tr><td>COGS at 100K+ units</td><td>$37</td></tr>
-          <tr><td>Hardware gross profit</td><td class="td-bold">$332 (~90%)</td></tr>
-          <tr><td>Monthly subscription</td><td>$9.99</td></tr>
-          <tr><td>Average subscription retention</td><td>24–36 months</td></tr>
-          <tr><td>Annual churn</td><td>25–35%</td></tr>
-          <tr><td>Manufacturer</td><td>Tier-1 · Shenzhen, India, Mexico</td></tr>
-        </table>
-      </div>
-    </div>
-
-    <!-- SCIENCE -->
-    <div id="pane-science" class="pane">
-      <div class="section-hdr">Science & Technology</div>
-      <div class="section-sub">Biophysical sensing approach · HPO axis modeling · Clinical validation</div>
-
-      <div class="grid2">
-        <div class="card">
-          <div class="card-title">Technology approach</div>
-          <table>
-            <tr><th>Approach</th><th>Status</th><th>Rationale</th></tr>
-            <tr><td class="td-bold">10-sensor biophysical fusion</td><td><span class="chip chip-green">Chosen</span></td><td class="td-muted">ML + differential eqns on HPO axis — core IP</td></tr>
-            <tr><td>ISF hormone patches</td><td><span class="chip chip-red">Rejected</span></td><td class="td-muted">Hormones 200K–1M× lower conc. than glucose</td></tr>
-            <tr><td>Sweat electrochemical</td><td><span class="chip chip-red">Rejected</span></td><td class="td-muted">Sensor degrades; lab-only viability</td></tr>
-            <tr><td>Blood / urine / saliva</td><td><span class="chip" style="background:#f1efe8;color:#5f5e5a">N/A</span></td><td class="td-muted">Not wearable — existing gold standard</td></tr>
-          </table>
-        </div>
-        <div class="card">
-          <div class="card-title">Pilot study results</div>
-          <table>
-            <tr><th>Metric</th><th>Clair</th><th>Benchmark</th></tr>
-            <tr><td>Study size</td><td>42 women, 252 cycles</td><td class="td-muted">—</td></tr>
-            <tr><td>Cycle tracking accuracy</td><td class="td-bold" style="color:var(--green)">94%</td><td class="td-muted">Ava Fertility: 87%</td></tr>
-            <tr><td>LH prediction MAE</td><td>1.64 mIU/mL</td><td class="td-muted">Pending blood serum</td></tr>
-            <tr><td>PDG prediction MAE</td><td>2.07 µg/mL</td><td class="td-muted">Pending blood serum</td></tr>
-            <tr><td>Validation status</td><td><span class="chip chip-amber">Ongoing</span></td><td class="td-muted">Blood serum study live</td></tr>
-          </table>
-          <div style="margin-top:10px;font-size:11px;color:var(--muted)">Full technical whitepaper available under mNDA. Presented at 2026 HHS National Conference on Women's Health.</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Open scientific diligence questions</div>
-        <table>
-          <tr><th>Question</th><th>Priority</th></tr>
-          <tr><td>Blood serum study results vs. urine metabolite validation — are findings consistent?</td><td><span class="chip chip-red">Critical</span></td></tr>
-          <tr><td>Robustness across skin tones, body composition, device placement variation</td><td><span class="chip chip-red">Critical</span></td></tr>
-          <tr><td>Model generalization: data points needed per new user for personalization?</td><td><span class="chip chip-amber">High</span></td></tr>
-          <tr><td>Signal interference when worn simultaneously with Oura or Apple Watch</td><td><span class="chip chip-amber">High</span></td></tr>
-          <tr><td>Battery life with full 10-sensor stack active — real-world wear testing</td><td><span class="chip chip-amber">High</span></td></tr>
-          <tr><td>Accuracy for perimenopause specifically (irregular cycles — harder to model)</td><td><span class="chip chip-amber">High</span></td></tr>
-        </table>
-      </div>
-    </div>
-
-    <!-- WHOOP -->
-    <div id="pane-whoop" class="pane">
-      <div class="section-hdr">The Whoop Question</div>
-      <div class="section-sub">Can Whoop repurpose current hardware for hormone monitoring? · Our assessment: <strong style="color:var(--red)">No — not without a rebuild</strong></div>
-
-      <div class="card">
-        <div class="card-title">Head-to-head comparison</div>
-        <div class="compare-table">
-          <div class="compare-row compare-head">
-            <div class="compare-cell">Dimension</div>
-            <div class="compare-cell">Whoop 5.0 Today</div>
-            <div class="compare-cell">What Clair Requires</div>
-          </div>
-          <div class="compare-row">
-            <div class="compare-cell dimension">Sensor count</div>
-            <div class="compare-cell whoop-bad">3–4 sensors (PPG, accel, GSR)</div>
-            <div class="compare-cell clair-good">10-sensor custom stack</div>
-          </div>
-          <div class="compare-row">
-            <div class="compare-cell dimension">Algorithms</div>
-            <div class="compare-cell whoop-bad">Trained to <em>filter</em> hormonal signal as noise</div>
-            <div class="compare-cell clair-good">Retrained on HPO axis from scratch</div>
-          </div>
-          <div class="compare-row">
-            <div class="compare-cell dimension">Training data</div>
-            <div class="compare-cell whoop-bad">No labeled hormonal ground truth</div>
-            <div class="compare-cell clair-good">252 validated cycles + blood serum</div>
-          </div>
-          <div class="compare-row">
-            <div class="compare-cell dimension">Form factor</div>
-            <div class="compare-cell whoop-bad">Minimalist — identity is smallness</div>
-            <div class="compare-cell clair-good">Larger to fit 10-sensor stack</div>
-          </div>
-          <div class="compare-row">
-            <div class="compare-cell dimension">Target audience</div>
-            <div class="compare-cell whoop-bad">Athletes — performance focus</div>
-            <div class="compare-cell clair-good">Women — hormonal health focus</div>
-          </div>
-          <div class="compare-row">
-            <div class="compare-cell dimension">Clinical capability</div>
-            <div class="compare-cell whoop-bad">None in women's health</div>
-            <div class="compare-cell clair-good">VP Quality (J&J, GE) + active FDA process</div>
-          </div>
-        </div>
-        <div class="verdict" style="margin-top:14px">
-          <strong>Timeline estimate:</strong> Even committing resources today, Whoop would need 3–4 years minimum — sensor stack development → training data collection → ML rebuild → clinical validation → FDA pre-submission. Clair ships 1.0 in Q4 2026 and 2.0 in Q4 2027. The head start is substantial and the data moat compounds with every cycle tracked.
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Questions to validate with Whoop team</div>
-        <div class="step" style="padding:10px 0">
-          <div class="step-body"><div class="step-title">Any internal R&D initiatives in women's hormonal monitoring?</div></div>
-        </div>
-        <div class="step" style="padding:10px 0">
-          <div class="step-body"><div class="step-title">Has Whoop explored the sensor architecture for hormone detection — and at what stage?</div></div>
-        </div>
-        <div class="step" style="padding:10px 0">
-          <div class="step-body"><div class="step-title">Would Whoop consider a data-sharing partnership with Clair rather than competing?</div></div>
-        </div>
-        <div class="step" style="padding:10px 0;border-bottom:none">
-          <div class="step-body"><div class="step-title">How does Whoop view women's health as a long-term adjacency?</div></div>
+        <div class="section-body">
+          <p><strong>Class 1 wellness device:</strong> Can launch immediately — no FDA clearance required. This is the Q4 2026 Clair 1.0 path.</p>
+          <p><strong>Class 2 medical device:</strong> Pre-submission already filed with FDA. Clearance unlocks HSA/FSA eligibility and insurance reimbursement — a significant revenue expansion lever. VP of Quality (J&J, GE Healthcare) leads this process.</p>
         </div>
       </div>
     </div>
 
-    <!-- RISK -->
-    <div id="pane-risk" class="pane">
-      <div class="section-hdr">Risk Register</div>
-      <div class="section-sub">8 risks tracked across scientific, business, hardware, regulatory, and competitive dimensions</div>
+    <div class="card">
+      <div class="card-title">Traction Funnel · Live as of Apr 3, 2026</div>
+      <div style="margin-bottom:16px">
+        <div class="funnel-row">
+          <div class="funnel-label">Waitlist signups</div>
+          <div class="funnel-val">18,018</div>
+          <div class="funnel-track"><div class="funnel-fill" style="width:100%;background:var(--border2)"></div></div>
+        </div>
+        <div class="funnel-row">
+          <div class="funnel-label">Pre-orders</div>
+          <div class="funnel-val">4,388</div>
+          <div class="funnel-track"><div class="funnel-fill" style="width:24.4%"></div></div>
+        </div>
+        <div style="font-size:11px;color:var(--dim);margin-top:4px;font-family:'DM Mono',monospace">24.4% waitlist → pre-order conversion</div>
+      </div>
+      <table class="tbl" style="margin-bottom:12px">
+        <thead><tr><th>Metric</th><th class="num">Value</th></tr></thead>
+        <tbody>
+          <tr><td>D2C Revenue</td><td class="num" style="color:var(--accent);font-weight:600">$811,780</td></tr>
+          <tr><td>B2B Contracted ARR (MOUs)</td><td class="num" style="color:var(--blue);font-weight:600">$20,589,776</td></tr>
+          <tr><td>B2B Partner Inquiries</td><td class="num">244</td></tr>
+          <tr><td>Avg daily pre-orders</td><td class="num">75.5</td></tr>
+          <tr><td>This week pre-orders</td><td class="num">463 <span style="color:var(--red);font-size:11px">▼ 528</span></td></tr>
+          <tr><td>This week signups</td><td class="num">1,847 <span style="color:var(--red);font-size:11px">▼ 2,385</span></td></tr>
+        </tbody>
+      </table>
+      <div class="highlight warn"><strong>Week-on-week deceleration</strong>Pre-orders and signups both down vs. last week. Typical post-launch normalization or fading demand? Demo day should re-accelerate. Monitor closely post-event.</div>
+    </div>
+  </div>
 
-      <div class="card">
-        <table>
-          <tr><th style="width:80px">Severity</th><th style="width:100px">Category</th><th>Risk</th><th>Notes</th></tr>
+  <div class="card">
+    <div class="card-title">The Whoop Question — Can They Repurpose Current Hardware?</div>
+    <div class="highlight danger" style="margin-bottom:16px"><strong>Assessment: No — not without a fundamental rebuild</strong>Given our Series G lead and 2013 investment history in Whoop, this is a question we can answer with unusual specificity.</div>
+    <table class="compare-table">
+      <thead><tr><th>Dimension</th><th>Whoop 5.0 today</th><th>What Clair requires</th></tr></thead>
+      <tbody>
+        <tr><td class="col-dim">Sensor count</td><td class="col-bad">3–4 (PPG, accel, GSR)</td><td class="col-good">10-sensor custom stack</td></tr>
+        <tr><td class="col-dim">Algorithms</td><td class="col-bad">Trained to filter hormonal signal as noise</td><td class="col-good">Retrained on HPO axis from scratch</td></tr>
+        <tr><td class="col-dim">Training data</td><td class="col-bad">No labeled hormonal ground truth</td><td class="col-good">252 validated cycles + ongoing blood serum</td></tr>
+        <tr><td class="col-dim">Form factor</td><td class="col-bad">Minimalist — identity is smallness</td><td class="col-good">Larger to fit 10-sensor stack</td></tr>
+        <tr><td class="col-dim">Target audience</td><td class="col-bad">Athletes — performance focus</td><td class="col-good">Women — hormonal health focus</td></tr>
+        <tr><td class="col-dim">Clinical capability</td><td class="col-bad">None in women's health</td><td class="col-good">VP Quality (J&J/GE) + active FDA process</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight" style="margin-top:12px"><strong>Timeline estimate</strong>Even committing resources today, Whoop would need 3–4 years minimum: sensor stack → training data → ML rebuild → clinical validation → FDA pre-submission. Clair ships 1.0 in Q4 2026, 2.0 in Q4 2027. The data moat compounds with every cycle tracked. <strong>Action: informal check with Whoop team on any internal R&D in this direction.</strong></div>
+  </div>
 
-          <tr>
-            <td><div class="risk-sev" style="color:var(--red)">Critical</div><div class="risk-bar"><div class="risk-fill" style="width:90%;background:#E24B4A"></div></div></td>
-            <td><span class="chip chip-red">Scientific</span></td>
-            <td class="td-bold">Blood serum study results unvalidated</td>
-            <td class="td-muted">Urine metabolite study complete (94% accuracy) but blood serum comparison is live. Decisive milestone — request whitepaper immediately.</td>
-          </tr>
-          <tr>
-            <td><div class="risk-sev" style="color:var(--orange)">High</div><div class="risk-bar"><div class="risk-fill" style="width:72%;background:var(--orange)"></div></div></td>
-            <td><span class="chip chip-amber">Business</span></td>
-            <td class="td-bold">$169 vs. $369 pricing discrepancy</td>
-            <td class="td-muted">Meeting notes show $169; deck shows $369. Unit economics model changes significantly. Clarify before finalizing conviction.</td>
-          </tr>
-          <tr>
-            <td><div class="risk-sev" style="color:var(--red)">High</div><div class="risk-bar"><div class="risk-fill" style="width:70%;background:#E24B4A"></div></div></td>
-            <td><span class="chip chip-red">Hardware</span></td>
-            <td class="td-bold">Q4 2026 shipping timeline</td>
-            <td class="td-muted">Aggressive for 10-sensor device with firmware + ML still in development. Need manufacturing ramp plan and milestone schedule.</td>
-          </tr>
-          <tr>
-            <td><div class="risk-sev" style="color:var(--amber)">Med-High</div><div class="risk-bar"><div class="risk-fill" style="width:58%;background:#EF9F27"></div></div></td>
-            <td><span class="chip chip-amber">Business</span></td>
-            <td class="td-bold">B2B MOU conversion</td>
-            <td class="td-muted">MOUs are non-binding. $20.6M ARR headline requires conversion. Do partners have budget allocated? What are payment terms?</td>
-          </tr>
-          <tr>
-            <td><div class="risk-sev" style="color:var(--blue)">Medium</div><div class="risk-bar"><div class="risk-fill" style="width:48%;background:var(--blue)"></div></div></td>
-            <td><span class="chip chip-blue">Competitive</span></td>
-            <td class="td-bold">Apple entering women's hormonal health</td>
-            <td class="td-muted">Apple has talent, distribution, and clinical relationships. Moat is data depth + clinical validation + FDA track + women-specific brand.</td>
-          </tr>
-          <tr>
-            <td><div class="risk-sev" style="color:var(--blue)">Medium</div><div class="risk-bar"><div class="risk-fill" style="width:44%;background:var(--blue)"></div></div></td>
-            <td><span class="chip chip-blue">Supply chain</span></td>
-            <td class="td-bold">China manufacturing / tariff exposure</td>
-            <td class="td-muted">Primary factory in Shenzhen. India and Mexico optionality exists — need clarification on diversification timeline given current trade environment.</td>
-          </tr>
-          <tr>
-            <td><div class="risk-sev" style="color:var(--blue)">Medium</div><div class="risk-bar"><div class="risk-fill" style="width:44%;background:var(--blue)"></div></div></td>
-            <td><span class="chip chip-blue">Regulatory</span></td>
-            <td class="td-bold">FDA Class 2 pathway</td>
-            <td class="td-muted">Pre-submission filed. Class 1 launch is fine without it. Class 2 unlocks HSA/FSA — significant revenue enabler if/when achieved.</td>
-          </tr>
-          <tr>
-            <td><div class="risk-sev" style="color:var(--muted)">Watch</div><div class="risk-bar"><div class="risk-fill" style="width:28%;background:#888780"></div></div></td>
-            <td><span class="chip" style="background:#f1efe8;color:#5f5e5a">Traction</span></td>
-            <td class="td-bold">Week-on-week deceleration</td>
-            <td class="td-muted">Pre-orders 463 vs 528; signups 1,847 vs 2,385 last week. Demo day catalyst expected. Normal post-launch pattern, but monitor post-demo.</td>
-          </tr>
-        </table>
+  <div class="card">
+    <div class="card-title">B2B Channel — Clinical Partners & International</div>
+    <table class="tbl">
+      <thead><tr><th>Partner Type</th><th>Examples</th><th>Status</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>IVF / Fertility clinics</td><td>Kindbody, Ovom Health, bird & be</td><td><span class="badge badge-green">MOU signed</span></td><td>Prescribe to fertility patients; join Clair network</td></tr>
+        <tr><td>Longevity / wellness</td><td>Joi + Blokes, Dama Health, FASTR</td><td><span class="badge badge-green">LOI signed</span></td><td>Perimenopause / longevity positioning</td></tr>
+        <tr><td>Institutional / fitness</td><td>YMCA</td><td><span class="badge badge-green">LOI signed</span></td><td>Broad consumer wellness channel</td></tr>
+        <tr><td>UK distributor</td><td>Named health platform</td><td><span class="badge badge-yellow">Live in 5 wks</span></td><td>250,000 monthly patients; "Midi Health of Australia" equivalent</td></tr>
+        <tr><td>Australia distributor</td><td>—</td><td><span class="badge badge-blue">In progress</span></td><td>Priority reference check target</td></tr>
+        <tr><td>Brazil / Switzerland / Belgium</td><td>—</td><td><span class="badge badge-gray">Conversations</span></td><td>Early stage</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ═══ FINANCIALS ═══ -->
+<div id="tab-financials" class="tab-content">
+<div class="container">
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="card-title">Unit Economics · Interactive Model</div>
+      <div class="slider-section">
+        <div class="slider-row"><label>Device retail price</label><span class="slider-val" id="v-price">$369</span></div>
+        <input type="range" min="169" max="499" step="10" value="369" id="s-price" oninput="calc()">
+      </div>
+      <div class="slider-section">
+        <div class="slider-row"><label>COGS at scale (100K+ units)</label><span class="slider-val" id="v-cogs">$37</span></div>
+        <input type="range" min="20" max="100" step="1" value="37" id="s-cogs" oninput="calc()">
+      </div>
+      <div class="slider-section">
+        <div class="slider-row"><label>Monthly subscription</label><span class="slider-val" id="v-sub">$9.99</span></div>
+        <input type="range" min="4.99" max="24.99" step="1" value="9.99" id="s-sub" oninput="calc()">
+      </div>
+      <div class="slider-section">
+        <div class="slider-row"><label>Avg retention (months)</label><span class="slider-val" id="v-ret">36 mo</span></div>
+        <input type="range" min="6" max="60" step="1" value="36" id="s-ret" oninput="calc()">
+      </div>
+      <div class="econ-result-grid">
+        <div class="econ-box"><div class="econ-box-label">HW gross margin</div><div class="econ-box-val" id="r-hwm">$332</div></div>
+        <div class="econ-box"><div class="econ-box-label">HW margin %</div><div class="econ-box-val" id="r-hwpct">90%</div></div>
+        <div class="econ-box"><div class="econ-box-label">Subscription rev.</div><div class="econ-box-val" id="r-sub">$360</div></div>
+        <div class="econ-box highlight-box"><div class="econ-box-label">Gross LTV</div><div class="econ-box-val" id="r-ltv">$692</div></div>
+        <div class="econ-box"><div class="econ-box-label">Payback period</div><div class="econ-box-val" id="r-payback" style="font-size:16px">At sale</div></div>
+        <div class="econ-box"><div class="econ-box-label">Sub LTV alone</div><div class="econ-box-val" id="r-sublv">$360</div></div>
+      </div>
+      <div class="highlight warn" style="margin-top:12px"><strong>Pricing discrepancy — verify immediately</strong>Meeting notes reference a $169 device price; the deck shows $369. Unit economics differ materially at both price points. Use slider above to model both scenarios.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">LTV Scenarios (from deck)</div>
+      <table class="tbl" style="margin-bottom:16px">
+        <thead><tr><th>Scenario</th><th>Retention</th><th class="num">Sub Revenue</th><th class="num">HW Profit</th><th class="num">Gross LTV</th></tr></thead>
+        <tbody>
+          <tr><td>Conservative</td><td>24 months</td><td class="num">$263.76</td><td class="num">$332</td><td class="num">$595.76</td></tr>
+          <tr class="accent"><td><strong>Expected</strong></td><td>36 months</td><td class="num" style="color:var(--accent)">$395.64</td><td class="num">$332</td><td class="num" style="color:var(--accent);font-weight:700">$727.64</td></tr>
+          <tr><td>Optimistic</td><td>48 months</td><td class="num">$527.52</td><td class="num">$332</td><td class="num">$859.52</td></tr>
+        </tbody>
+      </table>
+      <div class="card-title" style="margin-top:16px">Unit Economics Summary</div>
+      <table class="tbl">
+        <thead><tr><th>Metric</th><th class="num">Value</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Device retail price</td><td class="num"><strong>$369</strong></td><td style="color:var(--yellow);font-size:12px">⚠ Verify vs. notes ($169)</td></tr>
+          <tr><td>COGS at 100K+ units</td><td class="num">$37</td><td style="color:var(--dim);font-size:12px">All parts + manufacturing</td></tr>
+          <tr><td>Gross HW margin</td><td class="num" style="color:var(--accent);font-weight:600">$332 (~90%)</td><td style="color:var(--dim);font-size:12px">Best-in-class for hardware</td></tr>
+          <tr><td>Monthly subscription</td><td class="num">$9.99</td><td style="color:var(--dim);font-size:12px">Software + insights layer</td></tr>
+          <tr><td>Annual churn</td><td class="num">25–35%</td><td style="color:var(--dim);font-size:12px">Assumed; unvalidated pre-launch</td></tr>
+          <tr><td>Manufacturer</td><td colspan="2" style="color:var(--dim);font-size:12px">Tier-1 · Shenzhen + India + Mexico factories</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Raise & Use of Funds</div>
+    <div class="grid-3">
+      <div class="highlight"><strong>$7–10M Seed Target</strong>Funding priorities: meet market demand (pre-orders), scale manufacturing, grow team, retail launch, pursue FDA Class 2, and fund ongoing clinical studies including HARMONY research study and Mayo Clinic data integration.</div>
+      <div class="highlight"><strong>$3M Committed · Lead Open</strong>Pre-seed led by Speedrun and Bridge Capital. Current round closing approximately one week post Speedrun demo day — tight diligence window. Lead investor determines terms for priced round.</div>
+      <div class="highlight warn"><strong>Financial Model Gap</strong>No formal cost model shared yet — request in data room. Key question: what does the 18-month burn look like across manufacturing ramp, team build, clinical studies, and retail launch?</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Product Roadmap</div>
+    <table class="tbl">
+      <thead><tr><th>Period</th><th>Milestone</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--dim)">Q4 2025 – Q1 2026</td><td>Device design + manufacturing · Mobile app development · Firmware + ML</td><td><span class="badge badge-green">Complete</span></td></tr>
+        <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--dim)">Feb 2026</td><td>Stealth exit · Pre-order launch · B2B partner outreach</td><td><span class="badge badge-green">Complete</span></td></tr>
+        <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--dim)">Q2–Q3 2026</td><td>Fundraise close · Manufacturing ramp · UK launch · HARMONY study launch</td><td><span class="badge badge-yellow">In progress</span></td></tr>
+        <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--accent);font-weight:500">Q4 2026</td><td><strong>Clair 1.0 Go-to-Market</strong> · Retail launch · Clinical partner fulfillment</td><td><span class="badge badge-blue">Planned</span></td></tr>
+        <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--dim)">2027</td><td>FDA Class 2 clearance pursuit · Mayo Clinic data integration · Clair 2.0 development</td><td><span class="badge badge-gray">Future</span></td></tr>
+        <tr><td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--dim)">Q4 2027</td><td>Clair 2.0 Go-to-Market</td><td><span class="badge badge-gray">Future</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ═══ RISKS ═══ -->
+<div id="tab-risks" class="tab-content">
+<div class="container">
+  <div class="card">
+    <div class="card-title">Risk Register</div>
+    <div class="expand-btns">
+      <button class="expand-btn" onclick="expandAll('risk')">Expand all</button>
+      <button class="expand-btn" onclick="collapseAll('risk')">Collapse all</button>
+    </div>
+
+    <div class="section open" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="risk-severity sev-critical">Critical</span>&nbsp;&nbsp;Blood Serum Study Results Unvalidated</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>The pilot study (42 women, 252 cycles) was validated against urine-based at-home metabolite tests — the current consumer gold standard, not clinical blood draws. The ongoing blood serum study is the decisive scientific milestone. Until those results are available, the accuracy claims against actual hormone levels are unconfirmed.</p>
+        <p><strong>Diligence question:</strong> Request technical whitepaper under mNDA immediately. What does the blood serum study timeline look like? What accuracy threshold is Clair targeting?</p>
       </div>
     </div>
 
-    <!-- NEXT STEPS -->
-    <div id="pane-nextsteps" class="pane">
-      <div class="section-hdr">Next Steps</div>
-      <div class="section-sub">Prioritized diligence checklist · Close expected ~1 week post Speedrun demo day</div>
-
-      <div class="grid2">
-        <div class="card">
-          <div class="card-title">Priority diligence actions</div>
-          <div class="step">
-            <div class="step-num crit">1</div>
-            <div class="step-body">
-              <div class="step-title">Request technical whitepaper (mNDA)</div>
-              <div class="step-desc">Blood serum study methodology + results — decisive for scientific thesis. This is the single most important piece of information.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num crit">2</div>
-            <div class="step-body">
-              <div class="step-title">Clarify $169 vs. $369 device pricing</div>
-              <div class="step-desc">Unit economics model changes materially. Must resolve before finalizing conviction or term discussion.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num crit">3</div>
-            <div class="step-body">
-              <div class="step-title">Request data room access</div>
-              <div class="step-desc">Cap table, financials, manufacturing agreements, FDA pre-submission correspondence.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num high">4</div>
-            <div class="step-body">
-              <div class="step-title">Informal Whoop team check</div>
-              <div class="step-desc">Any internal R&D in hormone monitoring we should know about? Informative in both directions.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num high">5</div>
-            <div class="step-body">
-              <div class="step-title">Diligence call: VP of Quality</div>
-              <div class="step-desc">FDA pre-submission feedback, regulatory timeline, J&J/GE reference check.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num high">6</div>
-            <div class="step-body">
-              <div class="step-title">MOU structure review</div>
-              <div class="step-desc">Binding terms, payment schedules, conversion risk from $20.6M ARR headline number.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num med">7</div>
-            <div class="step-body">
-              <div class="step-title">Australian distributor reference check</div>
-              <div class="step-desc">Quality signal on B2B channel and clinical partner relationships.</div>
-            </div>
-          </div>
-          <div class="step">
-            <div class="step-num med">8</div>
-            <div class="step-body">
-              <div class="step-title">Manufacturing ramp plan review</div>
-              <div class="step-desc">Q4 2026 feasibility for 10-sensor device with ongoing firmware + ML development.</div>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <div class="card">
-            <div class="card-title">Fundraise status</div>
-            <div style="margin-bottom:12px">
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span>Target raise</span><span class="td-bold">$7–10M</span></div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span>Committed</span><span class="td-bold" style="color:var(--green)">$3M</span></div>
-              <div class="bar-wrap"><div class="bar-fill" style="width:35%;background:var(--green)"></div></div>
-            </div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.6">Lead investor opportunity still available. Close expected ~1 week post Speedrun demo day. Tight timeline for diligence — prioritize whitepaper + pricing clarity to move fast if conviction builds.</div>
-          </div>
-
-          <div class="card">
-            <div class="card-title">Collab fund context</div>
-            <div style="font-size:12.5px;line-height:1.7;color:var(--text)">
-              <div style="margin-bottom:8px">• Led <strong>Whoop Series G</strong>, investor since first round (2013) — gives unique vantage on hardware moats and the competitive question</div>
-              <div style="margin-bottom:8px">• <strong>Maven Clinic</strong> angel (Craig) — women's health familiarity</div>
-              <div style="margin-bottom:8px">• <strong>Rhythm Health</strong> (at-home blood testing) in portfolio — adjacent space</div>
-              <div>• Craig's <strong>NYU engineering background</strong> — well positioned to evaluate science and team</div>
-            </div>
-          </div>
-
-          <div class="verdict-orange">
-            <strong>Bottom line:</strong> Clair is doing something genuinely hard and is further along than most hardware companies at this stage. The founding team — particularly Abhinav's direct CGM parallel — is unusually well-suited. The Collab fit is strong. The central open question is scientific validation depth. Blood serum study results are decisive. Recommend second meeting + data room while we clarify pricing and check the Whoop angle.
-          </div>
-        </div>
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="risk-severity sev-high">High</span>&nbsp;&nbsp;$169 vs. $369 Pricing Discrepancy</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>Meeting notes reference a $169 device price. The deck prominently shows $369. These produce materially different unit economics: at $169, hardware gross margin drops to $132 (78%) vs. $332 (90%) at $369. LTV falls from $728 to ~$491 in the expected scenario. This is not a rounding difference — it changes the investment thesis.</p>
+        <p><strong>Diligence question:</strong> Is $169 a launch price, a pre-order price, or an error in the notes? What is the actual go-to-market device price?</p>
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
-</div><!-- /shell -->
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="risk-severity sev-high">High</span>&nbsp;&nbsp;Q4 2026 Hardware Shipping Timeline</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>Shipping a 10-sensor consumer wearable in approximately 6 months is aggressive — firmware and ML development are still ongoing. Hardware companies routinely miss ship dates by 6–12 months. A delay here puts 4,388+ pre-order customers at risk of churn and undermines the B2B MOU commitments.</p>
+        <p><strong>Diligence question:</strong> Walk through the manufacturing ramp plan milestone by milestone. What is the DFM status? Has EVT/DVT/PVT been completed?</p>
+      </div>
+    </div>
+
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="risk-severity sev-medium">Medium</span>&nbsp;&nbsp;B2B MOU Conversion — Non-Binding</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>The $20.6M B2B ARR headline is MOUs — memoranda of understanding, not signed purchase orders or contracts. Clinical partners have expressed intent to purchase, but intent at MOU stage has a meaningful falloff rate. Whether partners have budget allocated and what their procurement timelines look like is unknown.</p>
+        <p><strong>Diligence question:</strong> What are the MOU terms? Binding or non-binding? Do partners have FY2026 budget allocated for device procurement? Australian distributor reference call.</p>
+      </div>
+    </div>
+
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="risk-severity sev-medium">Medium</span>&nbsp;&nbsp;Apple / Big Tech Competitive Entry</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>Apple has the talent, clinical partnerships, FDA relationships, and distribution to enter women's hormonal health. A dedicated hormone sensor added to Apple Watch Series 13 would be existential for a standalone device. The moat Clair needs to build before that happens: clinical validation depth, FDA clearance, a branded women's health identity, and data moat from years of continuous monitoring.</p>
+        <p>Near-term, Whoop is the most-discussed competitive threat but our assessment is that their hardware and data position makes this 3–4 years away at minimum.</p>
+      </div>
+    </div>
+
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="risk-severity sev-medium">Medium</span>&nbsp;&nbsp;China Manufacturing / Tariff Exposure</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>Primary manufacturing is in Shenzhen. India and Mexico facilities exist with the same tier-1 partner — providing geographic optionality — but the timeline and cost to shift primary volume is unknown. In the current tariff environment, this is a non-trivial risk for COGS.</p>
+        <p><strong>Diligence question:</strong> What % of current production is Shenzhen? What is the timeline to shift primary production to India or Mexico? What is the COGS impact?</p>
+      </div>
+    </div>
+
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="risk-severity sev-medium">Medium</span>&nbsp;&nbsp;FDA Class 2 Pathway — Long and Expensive</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>Class 1 wellness launch is ready and doesn't require FDA clearance. The Class 2 path (filed pre-submission) unlocks HSA/FSA eligibility and insurance reimbursement — potentially a major revenue and TAM expansion. But de novo clearance is 2–4 years, expensive, and uncertain. The model shouldn't rely on it for near-term projections.</p>
+      </div>
+    </div>
+
+    <div class="section" data-group="risk">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="section-title"><span class="risk-severity sev-low">Watch</span>&nbsp;&nbsp;Week-on-Week Traction Deceleration</div>
+        <div class="section-chevron">▶</div>
+      </div>
+      <div class="section-body">
+        <p>Pre-orders this week (463) and signups (1,847) are both down meaningfully vs. last week (528 and 2,385). This is week 8 post-stealth — some normalization is expected. Demo day should re-accelerate. But if the post-demo trajectory doesn't recover, the organic demand picture is weaker than the headline numbers suggest.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Open Diligence Questions</div>
+    <table class="tbl">
+      <thead><tr><th>#</th><th>Question</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--dim);font-size:12px">1</td><td>Technical whitepaper (mNDA) — blood serum study methodology and results</td><td><span class="badge badge-red">Critical</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">2</td><td>Device pricing: $169 (notes) vs. $369 (deck) — which reflects actual go-to-market?</td><td><span class="badge badge-red">Critical</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">3</td><td>Data room access: cap table, financials, manufacturing agreements, FDA pre-submission</td><td><span class="badge badge-red">Critical</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">4</td><td>Informal Whoop team check — any internal R&D in women's hormonal monitoring?</td><td><span class="badge badge-yellow">High</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">5</td><td>Diligence call with VP of Quality — FDA pre-submission feedback and regulatory timeline</td><td><span class="badge badge-yellow">High</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">6</td><td>MOU structure: binding terms, payment schedules, conversion risk from $20.6M ARR headline</td><td><span class="badge badge-yellow">High</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">7</td><td>Manufacturing ramp: DFM status, EVT/DVT/PVT, Q4 2026 ship date feasibility</td><td><span class="badge badge-yellow">High</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">8</td><td>Australian distributor reference call — quality signal on B2B channel</td><td><span class="badge badge-blue">Medium</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">9</td><td>Post-demo day traction trajectory — do pre-orders re-accelerate?</td><td><span class="badge badge-blue">Medium</span></td></tr>
+        <tr><td style="color:var(--dim);font-size:12px">10</td><td>Valuation expectations — pre-money, option pool, and SAFE conversion mechanics</td><td><span class="badge badge-blue">Medium</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ═══ MEMO ═══ -->
+<div id="tab-memo" class="tab-content">
+<div class="container">
+<div class="memo">
+  <div class="memo-header">
+    <div class="memo-title">Investment Memo: Clair Health</div>
+    <div class="memo-meta">
+      <div class="memo-meta-key">Date</div><div class="memo-meta-val">April 7, 2026</div>
+      <div class="memo-meta-key">Stage</div><div class="memo-meta-val">Seed · $7–10M raise</div>
+      <div class="memo-meta-key">Category</div><div class="memo-meta-val">Femtech · Wearable Health · Consumer Hardware</div>
+      <div class="memo-meta-key">Intro</div><div class="memo-meta-val">Speedrun Demo Day</div>
+      <div class="memo-meta-key">Reviewer</div><div class="memo-meta-val">Craig W., Collaborative Fund</div>
+      <div class="memo-meta-key">Status</div><div class="memo-meta-val">Active — closing ~1 week post demo day</div>
+    </div>
+  </div>
+  <div class="memo-body">
+
+    <div class="memo-section-title">Executive Summary</div>
+    <div class="memo-prose">
+      <p>Clair Health is building the world's first wearable continuous hormone monitor — a wrist-worn device that tracks estrogen, progesterone, LH, and FSH without blood, urine, or saliva. The company is creating an entirely new category in the $100B+ women's health market, analogous to how CGMs created their own market beyond traditional glucose testing.</p>
+      <p>In 58 days out of stealth, Clair has accumulated 18,018 waitlist signups, 4,388 pre-orders, $811K in pre-order revenue, and $20.6M in B2B device purchase MOUs. The founding team is unusually well-suited: a CEO with consumer GTM instincts and a CTO who invented the first non-invasive CGM, raised $100M, guided that company through FDA de novo clearance, and is now being acquired by a European pharma company. The closest existing analogue to what Clair is building — and Abhinav has already done it once.</p>
+      <p>This is one of the strongest femtech signals we have seen at seed stage. We recommend proceeding to full diligence and moving quickly given the fundraise timeline.</p>
+    </div>
+
+    <div class="memo-section-title">Why This Matters for Collab</div>
+    <div class="memo-prose">
+      <p>Collab's thesis — good for you and good for the world — fits Clair precisely. $100B in women's health outcomes are driven by four hormones that nobody is continuously tracking. PCOS and endometriosis take 7–12 years to diagnose on average. Post-menopausal women face double the cardiovascular risk but are regularly turned away from cardiovascular care because their symptoms don't match screening criteria built around male patients. This is a $13B/year symptom-management market waiting for a diagnostic layer.</p>
+      <p>We have unusual context here. We led Whoop's Series G — our largest investment ever — and have been investors since their first round in 2013. This gives us a uniquely informed view on wearable hardware moats and on the Whoop competitive question specifically. Craig is an angel in Maven Clinic and has deep NYU engineering school context. Rhythm Health (at-home blood testing) is in the portfolio. This deal sits in the center of our capabilities and conviction.</p>
+    </div>
+
+    <div class="memo-section-title">The Opportunity</div>
+    <div class="memo-prose">
+      <p>Women's health is at a structural inflection point. The wearable adoption rate among US women 18–45 has crossed 30%. Seventy-two percent of clinicians now say patients bring wearable or app data to appointments. New FDA guidelines from January 2026 are opening the regulatory window for continuous monitoring. The moment is now.</p>
+      <p>The primary markets — fertility (1 in 6 couples struggle to conceive) and perimenopause ($13B/year in symptom management spend) — currently have zero continuous hormone monitoring solutions available. The diagnostic gap is not incremental; it is categorical. Clair is not competing with existing wearables, it is creating a new category.</p>
+      <p>Beachhead: fertility and perimenopause consumers who are already wearable-literate and highly motivated. Expansion path: longevity, athletic performance optimization, post-menopausal cardiovascular monitoring, and clinical/insurance channels via FDA Class 2 clearance.</p>
+    </div>
+
+    <div class="memo-section-title">Product & Differentiation</div>
+    <div class="memo-prose">
+      <p>The core technical differentiation is the <strong>10-sensor biophysical fusion model</strong> — a mathematical representation of the HPO axis using ML and differential equations. This is not an incremental improvement on existing sensor stacks; it is a fundamentally different sensing philosophy. Existing wearables use 3–4 sensors explicitly trained to filter out hormonal signals as noise. Clair's algorithms treat those signals as the signal.</p>
+      <p>Interstitial fluid patches and sweat electrochemical sensing were both evaluated and rejected: hormone concentrations in ISF are 200,000–1,000,000× lower than glucose (below detection threshold), and sweat-based sensors degrade in commercial wear conditions. The biophysical modeling approach is the only viable non-invasive path.</p>
+      <p>The data moat is real and compounds: every cycle tracked improves model accuracy for that user and for the broader population model. This is not easily replicated by a new entrant starting from scratch.</p>
+    </div>
+
+    <div class="memo-section-title">Team</div>
+    <div class="memo-prose">
+      <p><strong>Abhinav Agarwal (CTO)</strong> invented the first non-invasive CGM at KOS AI, raised $100M, guided the company through FDA de novo clearance, and is overseeing its acquisition by a European pharmaceutical company. He also published a Best Paper at ICAIRME '25 from a Stanford course project. His technical credential is not a rough analogue to what Clair is building — it is nearly a direct one. Non-invasive biophysical sensing of a target biomarker using ML-driven modeling: he has done this before, at scale, through regulatory clearance.</p>
+      <p><strong>Jenny Duan (CEO)</strong> brings consumer marketing and growth instincts from early-stage startups and fashion tech (Daydream), plus early-stage investing experience at Anthos. The founding insight — post-menopausal women requesting CGM prescriptions because no hormonal monitoring existed — came from direct observation. This is not a manufactured origin story.</p>
+      <p>The VP of Quality, with 15 years at J&J and GE Healthcare, provides the regulatory depth the team needs. FDA pre-submission is already filed — this team is not waiting to engage the regulatory process.</p>
+    </div>
+
+    <div class="memo-section-title">Key Risks</div>
+    <div class="memo-prose">
+      <p><strong>Scientific validation:</strong> The pilot study validated against urine-based at-home metabolite tests. The blood serum study is ongoing — this is the decisive milestone. We will not know the true accuracy picture until those results are available. Request whitepaper under mNDA immediately. <strong>Pricing discrepancy:</strong> Meeting notes reference $169 vs. $369 on the deck — this must be resolved before any term discussion, as unit economics differ materially. <strong>Hardware timeline:</strong> Q4 2026 for a 10-sensor wearable with ongoing firmware and ML development is aggressive. Hardware companies routinely miss ship dates. Need to see the manufacturing ramp plan. <strong>B2B conversion:</strong> $20.6M in B2B MOUs is non-binding. Whether clinical partners have budget allocated and on what timeline is unknown.</p>
+    </div>
+
+    <div class="memo-verdict">
+      <div class="memo-verdict-title">Recommendation: Proceed to Full Diligence — Move Quickly</div>
+      <div class="memo-verdict-body">
+        Clair is doing something genuinely hard and is further along than most hardware companies at this stage. The founding team — particularly Abhinav's direct CGM parallel — is unusually well-suited. Traction metrics out of stealth are impressive: 18,018 waitlist, 4,388 pre-orders, $811K D2C, $20.6M B2B in 58 days. The Collab fit is strong given our Whoop history, Maven Clinic context, and consumer health thesis. The category creation story is credible.
+        <br><br>
+        The central open question is scientific validation depth. Blood serum study results will be decisive. Until then, we are investing in a technically novel approach with strong early demand signals but unconfirmed clinical accuracy.
+        <br><br>
+        <strong>Immediate next steps:</strong> (1) Request technical whitepaper under mNDA, (2) Clarify $169 vs. $369 pricing, (3) Request data room access, (4) Informal Whoop team check. If those checks clear, this is a strong yes.
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+</div>
 
 <script>
-function show(pane, el) {
-  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('pane-' + pane).classList.add('active');
-  el.classList.add('active');
-}
-
-function calc() {
-  const price = +document.getElementById('s-price').value;
-  const cogs = +document.getElementById('s-cogs').value;
-  const sub = +document.getElementById('s-sub').value;
-  const ret = +document.getElementById('s-ret').value;
-  document.getElementById('v-price').textContent = '$' + price;
-  document.getElementById('v-cogs').textContent = '$' + cogs;
-  document.getElementById('v-sub').textContent = '$' + sub.toFixed(2);
-  document.getElementById('v-ret').textContent = ret + ' mo';
-  const hwm = price - cogs;
-  const hwpct = Math.round(hwm / price * 100);
-  const subRev = Math.round(sub * ret);
-  const ltv = hwm + subRev;
-  document.getElementById('r-hwm').textContent = '$' + Math.round(hwm);
-  document.getElementById('r-hwpct').textContent = hwpct + '%';
-  document.getElementById('r-sub').textContent = '$' + subRev;
-  document.getElementById('r-sub-ltv').textContent = '$' + subRev;
-  document.getElementById('r-ltv').textContent = '$' + Math.round(ltv);
-  document.getElementById('r-payback').textContent = hwm > 0 ? 'At sale' : 'Sub needed';
-}
+  function switchTab(name, el) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    el.classList.add('active');
+  }
+  function toggleSection(header) {
+    header.parentElement.classList.toggle('open');
+  }
+  function expandAll(group) {
+    document.querySelectorAll(`.section[data-group="${group}"]`).forEach(s => s.classList.add('open'));
+  }
+  function collapseAll(group) {
+    document.querySelectorAll(`.section[data-group="${group}"]`).forEach(s => s.classList.remove('open'));
+  }
+  function calc() {
+    const price = +document.getElementById('s-price').value;
+    const cogs  = +document.getElementById('s-cogs').value;
+    const sub   = +document.getElementById('s-sub').value;
+    const ret   = +document.getElementById('s-ret').value;
+    document.getElementById('v-price').textContent = '$' + price;
+    document.getElementById('v-cogs').textContent  = '$' + cogs;
+    document.getElementById('v-sub').textContent   = '$' + sub.toFixed(2);
+    document.getElementById('v-ret').textContent   = ret + ' mo';
+    const hwm    = price - cogs;
+    const hwpct  = Math.round(hwm / price * 100);
+    const subRev = Math.round(sub * ret);
+    const ltv    = Math.round(hwm + subRev);
+    document.getElementById('r-hwm').textContent     = '$' + Math.round(hwm);
+    document.getElementById('r-hwpct').textContent   = hwpct + '%';
+    document.getElementById('r-sub').textContent     = '$' + subRev;
+    document.getElementById('r-sublv').textContent   = '$' + subRev;
+    document.getElementById('r-ltv').textContent     = '$' + ltv;
+    document.getElementById('r-payback').textContent = hwm > 0 ? 'At sale' : 'Sub needed';
+  }
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.score-bar').forEach(bar => {
+        bar.style.width = bar.getAttribute('data-w') + '%';
+      });
+    }, 200);
+  });
 </script>
 </body>
 </html>
