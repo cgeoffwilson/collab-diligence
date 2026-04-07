@@ -3,6 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ============================================================ -->
+<!-- PASSWORD PROTECTION — TO REMOVE: DELETE FROM HERE...         -->
+<script>
+(function() {
+  const CORRECT = 'collabfund';
+  const GRANTED = 'straia_access_granted';
+  if (sessionStorage.getItem(GRANTED) !== '1') {
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.style.display = 'none';
+    });
+    var pwd = prompt('Enter password to access this document:');
+    if (pwd === CORRECT) {
+      sessionStorage.setItem(GRANTED, '1');
+    } else {
+      document.write('<div style="background:#f5f4f0;color:#999;font-family:Georgia,serif;height:100vh;display:flex;align-items:center;justify-content:center;font-size:15px;">Access denied.</div>');
+      document.close();
+    }
+  }
+})();
+</script>
+<!-- ...TO HERE (and the blank line below)                        -->
+<!-- ============================================================ -->
+  
 <title>Clair Health — Collab Fund Diligence</title>
 <style>
   :root {
