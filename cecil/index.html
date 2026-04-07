@@ -26,6 +26,7 @@
 </script>
 <!-- ...TO HERE (and the blank line below)                        -->
 <!-- ============================================================ -->
+ 
   
 <title>Cecil — Collaborative Fund Diligence</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
@@ -33,26 +34,26 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
 
 :root {
-  --bg: #0d0e0f;
-  --bg1: #141517;
-  --bg2: #1c1e21;
-  --bg3: #242628;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.13);
-  --text: #e8e6e0;
-  --text2: #9a9790;
-  --text3: #5c5a56;
-  --teal: #1fba8a;
-  --teal2: rgba(31,186,138,0.12);
-  --teal3: rgba(31,186,138,0.06);
-  --amber: #e0a040;
-  --amber2: rgba(224,160,64,0.12);
-  --red: #e05555;
-  --red2: rgba(224,85,85,0.1);
-  --blue: #5b9cf6;
-  --blue2: rgba(91,156,246,0.1);
-  --purple: #a78bfa;
-  --purple2: rgba(167,139,250,0.1);
+  --bg:      #f5f4f0;
+  --bg1:     #ffffff;
+  --bg2:     #f0ede6;
+  --bg3:     #e8e4dc;
+  --border:  rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.13);
+  --text:    #1a1917;
+  --text2:   #5a5854;
+  --text3:   #a0978e;
+  --teal:    #159e72;
+  --teal2:   rgba(21,158,114,0.12);
+  --teal3:   rgba(21,158,114,0.08);
+  --amber:   #b87a10;
+  --amber2:  rgba(184,122,16,0.1);
+  --red:     #c0393b;
+  --red2:    rgba(192,57,59,0.08);
+  --blue:    #2563c4;
+  --blue2:   rgba(37,99,196,0.08);
+  --purple:  #6d44cc;
+  --purple2: rgba(109,68,204,0.08);
   --mono: 'DM Mono', monospace;
   --sans: 'DM Sans', sans-serif;
 }
@@ -72,8 +73,8 @@ body {
 .shell { display: flex; flex-direction: column; min-height: 100vh; }
 
 .topbar {
-  background: var(--bg1);
-  border-bottom: 1px solid var(--border);
+  background: #fff;
+  border-bottom: 1px solid #e4e2dc;
   padding: 0 32px;
   display: flex;
   align-items: center;
@@ -126,7 +127,7 @@ body {
   font-size: 10px;
   color: var(--amber);
   background: var(--amber2);
-  border: 1px solid rgba(224,160,64,0.2);
+  border: 1px solid rgba(184,122,16,0.2);
   border-radius: 20px;
   padding: 3px 10px;
   letter-spacing: .04em;
@@ -227,12 +228,12 @@ tr:hover td { background: var(--bg2); }
   letter-spacing: .03em;
   white-space: nowrap;
 }
-.b-green { background: rgba(31,186,138,0.15); color: #1fba8a; }
-.b-blue { background: var(--blue2); color: var(--blue); }
-.b-amber { background: var(--amber2); color: var(--amber); }
-.b-red { background: var(--red2); color: var(--red); }
-.b-purple { background: var(--purple2); color: var(--purple); }
-.b-gray { background: var(--bg3); color: var(--text2); }
+.b-green  { background: #e0f5ec; color: #159e72; }
+.b-blue   { background: #deeafa; color: #2563c4; }
+.b-amber  { background: #fdf0dc; color: #b87a10; }
+.b-red    { background: #fce8e8; color: #c0393b; }
+.b-purple { background: #ede8fb; color: #6d44cc; }
+.b-gray   { background: var(--bg2); color: var(--text2); }
 
 /* ── SECTION DIVIDER ── */
 .sec-divider { height: 1px; background: var(--border); margin: 28px 0; }
@@ -262,7 +263,7 @@ tr:hover td { background: var(--bg2); }
 .score-lbl { font-size: 13px; font-weight: 500; color: var(--text); width: 170px; flex-shrink: 0; padding-top: 1px; }
 .score-lbl.alert { color: var(--red); }
 .score-dots { display: flex; gap: 5px; flex-shrink: 0; padding-top: 4px; }
-.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border2); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: #ddd8d0; border: 1px solid #ccc7be; }
 .dot.g { background: var(--teal); border-color: var(--teal); }
 .dot.a { background: var(--amber); border-color: var(--amber); }
 .dot.r { background: var(--red); border-color: var(--red); }
@@ -396,16 +397,9 @@ tr:hover td { background: var(--bg2); }
 .tl-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
 .tl-body { font-size: 12.5px; color: var(--text2); line-height: 1.6; }
 
-/* ── OVERVIEW LIGHT PANEL ── */
-.ov-shell {
-  background: #f5f4f0;
-  min-height: calc(100vh - 56px);
-}
-.ov-container {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: 36px 32px;
-}
+/* ── OVERVIEW PANEL ── */
+.ov-shell { background: var(--bg); min-height: calc(100vh - 56px); }
+.ov-container { max-width: 1040px; margin: 0 auto; padding: 36px 32px; }
 
 /* KPI strip */
 .kpi-strip {
@@ -738,7 +732,7 @@ tr:hover td { background: var(--bg2); }
       <tr><td>Nov 2025</td><td class="num">$9.2K</td><td class="num">$2.6K</td><td class="num">$132K</td><td class="num">($129K)</td><td class="num">$743K</td><td class="num">156</td><td class="num">27</td><td class="num">5.71B</td><td class="num">24</td></tr>
       <tr><td>Dec 2025</td><td class="num">$10.8K</td><td class="num">$4.6K</td><td class="num">$127K</td><td class="num">($123K)</td><td class="num">$661K</td><td class="num">162</td><td class="num">20</td><td class="num">8.54B</td><td class="num">26</td></tr>
       <tr><td>Jan 2026</td><td class="num">$11.1K</td><td class="num">$4.3K</td><td class="num">$126K</td><td class="num">($122K)</td><td class="num">$547K</td><td class="num">177</td><td class="num">28</td><td class="num">8.99B</td><td class="num">26</td></tr>
-      <tr style="background:var(--bg2)"><td>Feb 2026 ★</td><td class="num" style="color:var(--text)">$12K</td><td class="num" style="color:var(--red)">($1K)</td><td class="num" style="color:var(--amber)">$159K*</td><td class="num" style="color:var(--red)">($160K)</td><td class="num" style="color:var(--red)">$431K</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+      <tr style="background:#f7f5f0"><td>Feb 2026 ★</td><td class="num" style="color:#1a1917;font-weight:600">$12K</td><td class="num" style="color:var(--red)">($1K)</td><td class="num" style="color:var(--amber)">$159K*</td><td class="num" style="color:var(--red)">($160K)</td><td class="num" style="color:var(--red)">$431K</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
     </tbody>
   </table>
   </div>
@@ -1251,12 +1245,12 @@ function toggleRisk(header) {
 }
 
 // ── CHART CONFIG ──
-const gridColor = 'rgba(255,255,255,0.05)';
-const tickColor = 'rgba(255,255,255,0.25)';
-const teal = '#1fba8a';
-const amber = '#e0a040';
-const blue = '#5b9cf6';
-const red = '#e05555';
+const gridColor = 'rgba(0,0,0,0.06)';
+const tickColor = 'rgba(0,0,0,0.3)';
+const teal   = '#159e72';
+const amber  = '#b87a10';
+const blue   = '#2563c4';
+const red    = '#c0393b';
 
 function baseOpts(yCallback) {
   return {
@@ -1286,20 +1280,20 @@ function buildMetricCharts() {
   new Chart(document.getElementById('custChart'), {
     type: 'line',
     data: { labels, datasets: [
-      { label: 'Total', data: total, borderColor: blue, backgroundColor: blue + '10', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: blue },
+      { label: 'Total', data: total, borderColor: blue, backgroundColor: blue + '18', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: blue },
       { label: 'Active', data: active, borderColor: amber, backgroundColor: 'transparent', tension: 0.4, pointRadius: 3, pointBackgroundColor: amber, borderDash: [4,3] }
     ]},
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tickColor, font: { size: 11 }, boxWidth: 12 } }, tooltip: { backgroundColor: '#1c1e21', titleColor: '#e8e6e0', bodyColor: '#9a9790', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 } }, scales: { x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor } }, y: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor }, beginAtZero: true } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tickColor, font: { size: 11 }, boxWidth: 12 } }, tooltip: { backgroundColor: '#fff', titleColor: '#1a1917', bodyColor: '#5a5854', borderColor: '#e4e2dc', borderWidth: 1 } }, scales: { x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor } }, y: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor }, beginAtZero: true } } }
   });
 
   const marginLabels = ['Sep','Oct','Nov','Dec','Jan','Feb'];
   const marginData   = [4.5, 1.4, 2.6, 4.6, 4.3, -1];
-  const mColors = marginData.map(v => v < 0 ? red + '90' : teal + '80');
+  const mColors = marginData.map(v => v < 0 ? red + 'a0' : teal + 'a0');
   const mBorder = marginData.map(v => v < 0 ? red : teal);
   new Chart(document.getElementById('marginChart'), {
     type: 'bar',
     data: { labels: marginLabels, datasets: [{ data: marginData, backgroundColor: mColors, borderColor: mBorder, borderWidth: 1, borderRadius: 3 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y.toFixed(1) + 'K' }, backgroundColor: '#1c1e21', titleColor: '#e8e6e0', bodyColor: '#9a9790', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 } }, scales: { x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor } }, y: { ticks: { color: tickColor, font: { size: 11 }, callback: v => '$' + v + 'K' }, grid: { color: gridColor } } } }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y.toFixed(1) + 'K' }, backgroundColor: '#fff', titleColor: '#1a1917', bodyColor: '#5a5854', borderColor: '#e4e2dc', borderWidth: 1 } }, scales: { x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor } }, y: { ticks: { color: tickColor, font: { size: 11 }, callback: v => '$' + v + 'K' }, grid: { color: gridColor } } } }
   });
 }
 
@@ -1332,3 +1326,4 @@ setTimeout(buildOverviewCharts, 100);
 </script>
 </body>
 </html>
+
