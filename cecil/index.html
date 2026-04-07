@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ============================================================ -->
+<!-- PASSWORD PROTECTION — TO REMOVE: DELETE FROM HERE...         -->
+<script>
+(function() {
+  const CORRECT = 'collabfund';
+  const GRANTED = 'straia_access_granted';
+  if (sessionStorage.getItem(GRANTED) !== '1') {
+    document.addEventListener('DOMContentLoaded', function() {
+      document.body.style.display = 'none';
+    });
+    var pwd = prompt('Enter password to access this document:');
+    if (pwd === CORRECT) {
+      sessionStorage.setItem(GRANTED, '1');
+    } else {
+      document.write('<div style="background:#f5f4f0;color:#999;font-family:Georgia,serif;height:100vh;display:flex;align-items:center;justify-content:center;font-size:15px;">Access denied.</div>');
+      document.close();
+    }
+  }
+})();
+</script>
+<!-- ...TO HERE (and the blank line below)                        -->
+<!-- ============================================================ -->
+  
+<title>Cecil — Collaborative Fund Diligence</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
+:root {
+  --bg: #0d0e0f;
+  --bg1: #141517;
+  --bg2: #1c1e21;
+  --bg3: #242628;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #e8e6e0;
+  --text2: #9a9790;
+  --text3: #5c5a56;
+  --teal: #1fba8a;
+  --teal2: rgba(31,186,138,0.12);
+  --teal3: rgba(31,186,138,0.06);
+  --amber: #e0a040;
+  --amber2: rgba(224,160,64,0.12);
+  --red: #e05555;
+  --red2: rgba(224,85,85,0.1);
+  --blue: #5b9cf6;
+  --blue2: rgba(91,156,246,0.1);
+  --purple: #a78bfa;
+  --purple2: rgba(167,139,250,0.1);
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── LAYOUT ── */
+.shell { display: flex; flex-direction: column; min-height: 100vh; }
+
+.topbar {
+  background: var(--bg1);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.wordmark {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text);
+  letter-spacing: .02em;
+  margin-right: 24px;
+  padding-right: 24px;
+  border-right: 1px solid var(--border2);
+  white-space: nowrap;
+}
+.wordmark span { color: var(--teal); }
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  height: 100%;
+  align-items: center;
+}
+
+.tab-btn {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 6px;
+  letter-spacing: .02em;
+  transition: color .15s, background .15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--text2); background: var(--bg2); }
+.tab-btn.active { color: var(--teal); background: var(--teal3); }
+
+.stage-pill {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--amber);
+  background: var(--amber2);
+  border: 1px solid rgba(224,160,64,0.2);
+  border-radius: 20px;
+  padding: 3px 10px;
+  letter-spacing: .04em;
+}
+
+/* ── CONTENT ── */
+.content { flex: 1; }
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+.container { max-width: 1040px; margin: 0 auto; padding: 36px 32px; }
+.container-wide { max-width: 1200px; margin: 0 auto; padding: 36px 32px; }
+
+/* ── TYPOGRAPHY ── */
+.page-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text3);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+h2 {
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: -.3px;
+  margin-bottom: 4px;
+}
+h3 {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.sub {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 32px;
+}
+
+/* ── CARDS ── */
+.card {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+}
+.card-sm {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+
+/* ── METRIC TILES ── */
+.metric-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 28px; }
+.metric-tile {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+.metric-tile.alert { border-color: rgba(224,85,85,0.3); background: rgba(224,85,85,0.04); }
+.metric-tile .lbl { font-size: 10px; color: var(--text3); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px; }
+.metric-tile .val { font-family: var(--mono); font-size: 20px; color: var(--text); }
+.metric-tile.alert .val { color: var(--red); }
+.metric-tile .delta { font-size: 10px; color: var(--text3); margin-top: 3px; }
+.metric-tile .delta.up { color: var(--teal); }
+.metric-tile .delta.dn { color: var(--red); }
+
+/* ── CHARTS ── */
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+.chart-wrap { background: var(--bg1); border: 1px solid var(--border); border-radius: 10px; padding: 20px 22px; }
+.chart-label { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 16px; }
+.chart-inner { position: relative; height: 180px; }
+
+/* ── TABLES ── */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .07em; text-transform: uppercase; padding: 8px 12px; border-bottom: 1px solid var(--border2); white-space: nowrap; }
+td { padding: 10px 12px; color: var(--text2); border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+td:first-child { color: var(--text); font-weight: 500; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg2); }
+.num { text-align: right; font-family: var(--mono); font-size: 12px; }
+.num-h { text-align: right; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: .03em;
+  white-space: nowrap;
+}
+.b-green { background: rgba(31,186,138,0.15); color: #1fba8a; }
+.b-blue { background: var(--blue2); color: var(--blue); }
+.b-amber { background: var(--amber2); color: var(--amber); }
+.b-red { background: var(--red2); color: var(--red); }
+.b-purple { background: var(--purple2); color: var(--purple); }
+.b-gray { background: var(--bg3); color: var(--text2); }
+
+/* ── SECTION DIVIDER ── */
+.sec-divider { height: 1px; background: var(--border); margin: 28px 0; }
+
+/* ── OVERVIEW ── */
+.rec-box {
+  background: var(--bg1);
+  border: 1px solid var(--border2);
+  border-left: 3px solid var(--teal);
+  border-radius: 0 8px 8px 0;
+  padding: 18px 20px;
+  margin-bottom: 28px;
+}
+.rec-label { font-size: 10px; font-weight: 600; color: var(--teal); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+.rec-box p { font-size: 13.5px; line-height: 1.75; color: var(--text2); }
+
+/* ── SCORECARD ── */
+.score-grid { display: flex; flex-direction: column; gap: 0; }
+.score-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.score-row:last-child { border-bottom: none; }
+.score-lbl { font-size: 13px; font-weight: 500; color: var(--text); width: 170px; flex-shrink: 0; padding-top: 1px; }
+.score-lbl.alert { color: var(--red); }
+.score-dots { display: flex; gap: 5px; flex-shrink: 0; padding-top: 4px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border2); }
+.dot.g { background: var(--teal); border-color: var(--teal); }
+.dot.a { background: var(--amber); border-color: var(--amber); }
+.dot.r { background: var(--red); border-color: var(--red); }
+.score-note { font-size: 12.5px; color: var(--text2); flex: 1; line-height: 1.6; }
+
+/* ── RISK REGISTER ── */
+.risk-grid { display: flex; flex-direction: column; gap: 10px; }
+.risk-item {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.risk-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.risk-header:hover { background: var(--bg2); }
+.risk-sev {
+  width: 3px;
+  border-radius: 2px;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+.risk-sev.high { background: var(--red); }
+.risk-sev.med { background: var(--amber); }
+.risk-sev.low { background: var(--teal); }
+.risk-title { font-size: 13px; font-weight: 500; color: var(--text); flex: 1; }
+.risk-meta { display: flex; align-items: center; gap: 10px; }
+.impact-pill {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.ip-high { background: var(--red2); color: var(--red); }
+.ip-med { background: var(--amber2); color: var(--amber); }
+.ip-low { background: var(--teal3); color: var(--teal); }
+.chevron { color: var(--text3); font-size: 10px; transition: transform .2s; }
+.risk-body {
+  display: none;
+  padding: 0 18px 16px 33px;
+  font-size: 12.5px;
+  color: var(--text2);
+  line-height: 1.7;
+  border-top: 1px solid var(--border);
+}
+.risk-body.open { display: block; }
+.risk-body strong { color: var(--text); font-weight: 500; }
+
+/* ── PIPELINE ── */
+.filter-row { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+.filter-btn {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all .15s;
+  letter-spacing: .02em;
+}
+.filter-btn:hover { color: var(--text2); border-color: var(--border2); }
+.filter-btn.on { background: var(--teal3); color: var(--teal); border-color: rgba(31,186,138,0.3); }
+
+.pip-item {
+  background: var(--bg1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 8px;
+}
+.pip-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.pip-co { font-size: 14px; font-weight: 500; color: var(--text); }
+.pip-type { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+.pip-body { font-size: 12.5px; color: var(--text2); line-height: 1.65; }
+.pip-quote {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--bg2);
+  border-left: 2px solid var(--teal);
+  border-radius: 0 4px 4px 0;
+  font-size: 12px;
+  color: var(--text2);
+  font-style: italic;
+}
+
+/* ── MEMO ── */
+.memo-shell {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 36px 32px;
+}
+.memo-header {
+  border-bottom: 1px solid var(--border2);
+  padding-bottom: 20px;
+  margin-bottom: 28px;
+}
+.memo-co { font-size: 28px; font-weight: 300; color: var(--text); letter-spacing: -.4px; margin-bottom: 4px; }
+.memo-tag { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.memo-meta-grid {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr;
+  gap: 6px 16px;
+  margin-top: 16px;
+  font-size: 12px;
+}
+.meta-key { color: var(--text3); font-weight: 500; letter-spacing: .04em; text-transform: uppercase; font-size: 10px; padding-top: 2px; }
+.meta-val { color: var(--text2); }
+
+.memo-section { margin-bottom: 24px; }
+.memo-h { font-size: 11px; font-weight: 600; color: var(--teal); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
+.memo-p { font-size: 13.5px; line-height: 1.8; color: var(--text2); margin-bottom: 10px; }
+.memo-p:last-child { margin-bottom: 0; }
+.memo-p strong { color: var(--text); font-weight: 500; }
+
+.q-table td:first-child { width: 120px; font-family: var(--mono); font-size: 11px; color: var(--text3); font-weight: 400; }
+
+/* ── TIMELINE ── */
+.timeline { position: relative; padding-left: 20px; }
+.timeline::before { content: ''; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 1px; background: var(--border2); }
+.tl-item { position: relative; margin-bottom: 18px; }
+.tl-item::before { content: ''; position: absolute; left: -18px; top: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--teal); border: 2px solid var(--bg); }
+.tl-date { font-family: var(--mono); font-size: 10px; color: var(--text3); margin-bottom: 2px; }
+.tl-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.tl-body { font-size: 12.5px; color: var(--text2); line-height: 1.6; }
+
+/* ── OVERVIEW LIGHT PANEL ── */
+.ov-shell {
+  background: #f5f4f0;
+  min-height: calc(100vh - 56px);
+}
+.ov-container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 36px 32px;
+}
+
+/* KPI strip */
+.kpi-strip {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.kpi-tile {
+  background: #fff;
+  border: 1px solid #e4e2dc;
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+.kpi-tile.kpi-accent { border-top: 3px solid #1fba8a; }
+.kpi-tile.kpi-warn   { border-top: 3px solid #e05555; }
+.kpi-tile .kpi-lbl { font-size: 10px; color: #9a9790; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 5px; }
+.kpi-tile .kpi-val { font-family: 'DM Mono', monospace; font-size: 20px; color: #1a1917; line-height: 1.1; }
+.kpi-tile.kpi-accent .kpi-val { color: #1fba8a; }
+.kpi-tile.kpi-warn   .kpi-val { color: #e05555; }
+.kpi-tile .kpi-sub { font-size: 10px; color: #b0ada6; margin-top: 3px; }
+
+/* Two-column grid */
+.ov-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+/* Light cards */
+.lcard {
+  background: #fff;
+  border: 1px solid #e4e2dc;
+  border-radius: 10px;
+  padding: 22px 24px;
+}
+.lcard-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: #b0ada6;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+/* Snapshot table */
+.snap-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.snap-table td { padding: 7px 0; border-bottom: 1px solid #f0ede6; vertical-align: top; line-height: 1.5; }
+.snap-table tr:last-child td { border-bottom: none; }
+.snap-table td:first-child { color: #9a9790; width: 130px; font-size: 11px; letter-spacing: .02em; padding-right: 12px; }
+.snap-table td:last-child { color: #1a1917; font-weight: 500; }
+
+/* What it does serif prose */
+.ov-prose {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-size: 14px;
+  line-height: 1.85;
+  color: #4a4845;
+}
+.ov-prose p { margin-bottom: 12px; }
+.ov-prose p:last-child { margin-bottom: 0; }
+
+/* Why now light */
+.ov-why-row {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #e4e2dc;
+  border-radius: 8px;
+}
+.ov-why-tag {
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+.ov-why-tag.g { background: #eaf3de; color: #3b6d11; }
+.ov-why-tag.b { background: #e6f1fb; color: #185fa5; }
+.ov-why-tag.p { background: #eeedfe; color: #3c3489; }
+.ov-why-text { font-size: 13px; color: #5a5854; line-height: 1.7; }
+
+/* Team light */
+.ov-team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ov-team-card {
+  background: #fff;
+  border: 1px solid #e4e2dc;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.ov-team-name { font-size: 13px; font-weight: 600; color: #1a1917; margin-bottom: 2px; }
+.ov-team-role { font-size: 10px; color: #b0ada6; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 6px; }
+.ov-team-bio { font-size: 12px; color: #6a6864; line-height: 1.55; }
+
+/* Light section labels */
+.ov-section-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  color: #b0ada6;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  margin-top: 24px;
+}
+.ov-section-lbl:first-child { margin-top: 0; }
+
+/* Light rec box */
+.ov-rec {
+  background: #fff;
+  border: 1px solid #e4e2dc;
+  border-left: 3px solid #1fba8a;
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.ov-rec-lbl { font-size: 10px; font-weight: 600; color: #1fba8a; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+.ov-rec p { font-size: 13.5px; line-height: 1.75; color: #4a4845; }
+.ov-rec strong { color: #1a1917; }
+
+/* Light charts */
+.ov-charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.ov-chart-wrap { background: #fff; border: 1px solid #e4e2dc; border-radius: 10px; padding: 18px 20px; }
+.ov-chart-lbl { font-size: 10px; font-weight: 600; color: #b0ada6; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 14px; }
+.ov-chart-inner { position: relative; height: 160px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 760px) {
+  .metric-row { grid-template-columns: 1fr 1fr; }
+  .charts-row { grid-template-columns: 1fr; }
+  .topbar { padding: 0 16px; }
+  .container, .container-wide, .memo-shell { padding: 24px 16px; }
+  .memo-meta-grid { grid-template-columns: auto 1fr; }
+  .kpi-strip, .ov-grid2, .ov-team-grid, .ov-charts-row { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ═══ TOPBAR ═══ -->
+<header class="topbar">
+  <div class="wordmark">COLLAB<span>FUND</span> / <span style="opacity:.5">DILIGENCE</span></div>
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="metrics">Metrics</button>
+    <button class="tab-btn" data-tab="pipeline">Pipeline</button>
+    <button class="tab-btn" data-tab="scorecard">Scorecard</button>
+    <button class="tab-btn" data-tab="risks">Risk Register</button>
+    <button class="tab-btn" data-tab="updates">Updates</button>
+    <button class="tab-btn" data-tab="memo">Memo</button>
+  </nav>
+  <div class="stage-pill">SEED · APR 2026</div>
+</header>
+
+<!-- ═══ CONTENT ═══ -->
+<main class="content">
+
+<!-- ────────────────── OVERVIEW ────────────────── -->
+<div id="tab-overview" class="tab-pane active">
+<div class="ov-shell">
+<div class="ov-container">
+
+  <!-- Recommendation -->
+  <div class="ov-rec">
+    <div class="ov-rec-lbl">Recommendation</div>
+    <p>Cecil is building the infrastructure layer between fragmented spatial data providers and a growing class of enterprise users who need that data to power high-stakes operational decisions. The thesis is sound, the market shift is real, and Amazon reached $100K+ in three months from a single workflow. The key question is whether this is a durable platform or a sophisticated data broker. <strong>We recommend proceeding to full diligence.</strong></p>
+  </div>
+
+  <!-- KPI Strip -->
+  <div class="kpi-strip">
+    <div class="kpi-tile kpi-accent">
+      <div class="kpi-lbl">Amazon spend</div>
+      <div class="kpi-val">&gt;$100K</div>
+      <div class="kpi-sub">Dec '25 – Mar '26 · 3 months</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-lbl">Monthly revenue</div>
+      <div class="kpi-val">$12K</div>
+      <div class="kpi-sub">▲ from $9K in Sep '25</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-lbl">Ha processed (cumul.)</div>
+      <div class="kpi-val">~9B</div>
+      <div class="kpi-sub">Jan 2026 · >50% world land surface</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="kpi-lbl">Total customers</div>
+      <div class="kpi-val">177</div>
+      <div class="kpi-sub">28 active · 26 datasets</div>
+    </div>
+    <div class="kpi-tile kpi-warn">
+      <div class="kpi-lbl">Cash runway</div>
+      <div class="kpi-val">~3.5mo</div>
+      <div class="kpi-sub">$431K @ $125K/mo burn</div>
+    </div>
+  </div>
+
+  <!-- Company Snapshot + What it Does -->
+  <div class="ov-grid2">
+    <div class="lcard">
+      <div class="lcard-title">Company Snapshot</div>
+      <table class="snap-table">
+        <tr><td>Company</td><td>Cecil</td></tr>
+        <tr><td>Website</td><td>cecil.earth</td></tr>
+        <tr><td>Founded</td><td>~2023 (London / NYC)</td></tr>
+        <tr><td>Category</td><td>Spatial data infrastructure · AI context layer</td></tr>
+        <tr><td>Stage</td><td>Seed · First institutional raise</td></tr>
+        <tr><td>Contact</td><td>Alex Logan, CEO — alex@cecil.earth</td></tr>
+        <tr><td>Headcount</td><td>9 (3 founders + science + eng + ops)</td></tr>
+        <tr><td>Burn rate</td><td>~$120–125K/month</td></tr>
+        <tr><td>Trusted by</td><td>Amazon, ING, Planet, Stantec</td></tr>
+        <tr><td>Data providers</td><td>IBAT, WWF, Emmi, Sylvera, Planet</td></tr>
+        <tr><td>Reviewer</td><td>Craig W. · Collaborative Fund</td></tr>
+        <tr><td>Status</td><td>Reviewing · Fundraise active</td></tr>
+      </table>
+    </div>
+
+    <div class="lcard">
+      <div class="lcard-title">What Cecil Does</div>
+      <div class="ov-prose">
+        <p>Cecil is the infrastructure layer for spatial intelligence. It makes spatial datasets — land use, flood risk, biodiversity, water stress, satellite imagery — accessible to data and science teams inside large enterprises, replacing a process that previously took months of procurement and specialist labor with a Python SDK call that takes minutes.</p>
+        <p>The product wraps dozens of datasets from providers like IBAT, WWF, and Planet into a unified API, standardized format, and shared scientific context layer. Enterprises subscribe once and pipe any dataset into their production notebooks and pipelines. Today Cecil's product looks like APIs, documentation, and metadata that fit into modern data workflows — tomorrow, it becomes the ontology layer that makes AI agents reliable when reasoning about the physical world.</p>
+        <p>The AlphaSense analogy is instructive: what began as a research tool for financial data grew into a $500M ARR platform used by 6,500+ customers by making data embedded, searchable, and API-accessible across the enterprise. Cecil is making the same bet on physical-world data — with the added tailwind that AI agents urgently need a scientific context layer to avoid silent critical errors.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts row -->
+  <div class="ov-charts-row" style="margin-bottom:20px">
+    <div class="ov-chart-wrap">
+      <div class="ov-chart-lbl">Ha Processed — cumulative (millions)</div>
+      <div class="ov-chart-inner"><canvas id="haChart"></canvas></div>
+    </div>
+    <div class="ov-chart-wrap">
+      <div class="ov-chart-lbl">Monthly Revenue ($K)</div>
+      <div class="ov-chart-inner"><canvas id="revChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Why now -->
+  <div class="ov-section-lbl">Why now</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+    <div class="ov-why-row">
+      <span class="ov-why-tag g">Data team shift</span>
+      <div class="ov-why-text">Snowflake, Databricks, and BigQuery all added native spatial types (GEOGRAPHY/GEOMETRY). Uber's H3 spatial indexing was built internally and open-sourced. Data and science teams are now the primary consumers of spatial data — not GIS specialists — and they need infrastructure that fits into notebooks, not PDF exports.</div>
+    </div>
+    <div class="ov-why-row">
+      <span class="ov-why-tag b">Regulatory tailwinds</span>
+      <div class="ov-why-text">CSRD requires site-level physical risk disclosures for 350K+ companies. EUDR mandates supply chain site-level verification. TNFD has 1,200 expected market participants. These mandates require querying millions of asset locations programmatically — far beyond what legacy GIS tools handle.</div>
+    </div>
+    <div class="ov-why-row">
+      <span class="ov-why-tag p">AI context gap</span>
+      <div class="ov-why-text">Spatial datasets encode scientific meaning inconsistently — "forest" defined by canopy cover vs. land use vs. biodiversity; global forest models have only 26% overlap. Without a shared ontology, AI agents produce silent critical errors. One agent misestimated a carbon project by 10x. Cecil's context layer becomes essential AI infrastructure.</div>
+    </div>
+  </div>
+
+  <!-- Team -->
+  <div class="ov-section-lbl">Team</div>
+  <div class="ov-team-grid" style="margin-bottom:10px">
+    <div class="ov-team-card">
+      <div class="ov-team-name">Alex Logan</div>
+      <div class="ov-team-role">CEO & Co-founder</div>
+      <div class="ov-team-bio">Commercial lead. Deep customer development. Running all go-to-market solo while fundraise is underway. Revenue and pipeline owner.</div>
+    </div>
+    <div class="ov-team-card">
+      <div class="ov-team-name">Tom Walker, PhD</div>
+      <div class="ov-team-role">Head of Science</div>
+      <div class="ov-team-bio">ETH Zürich, NASA, Stanford. Co-publishing "Candid Cartography" on geospatial ontology. The scientific moat is built on his research program.</div>
+    </div>
+    <div class="ov-team-card">
+      <div class="ov-team-name">Wagner Camarao</div>
+      <div class="ov-team-role">Head of Engineering</div>
+      <div class="ov-team-bio">Thoughtworks, VMware pedigree. Leading 3 engineers on production-grade API infra. ArcGIS integration built in 2 days for Stantec.</div>
+    </div>
+  </div>
+  <p style="font-size:11px;color:#b0ada6">+ Connor Jordan (RevOps), Sabine Nix (Scientist), 4 engineers. Collective backgrounds: BCG, UC Berkeley, ETH Zürich, NASA, Stanford, Thoughtworks, TPG, VMware.</p>
+
+</div>
+</div>
+</div>
+
+<!-- ────────────────── METRICS ────────────────── -->
+<div id="tab-metrics" class="tab-pane">
+<div class="container">
+
+  <div class="page-title">Platform & Financial Metrics</div>
+  <h2>Metrics</h2>
+  <p class="sub">Monthly updates from Alex Logan, Sep 2025 – Feb 2026</p>
+
+  <!-- Chart row -->
+  <div class="charts-row" style="margin-bottom:32px">
+    <div class="chart-wrap">
+      <div class="chart-label">Customers (total vs. active)</div>
+      <div class="chart-inner"><canvas id="custChart"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-label">Monthly gross margin ($K)</div>
+      <div class="chart-inner"><canvas id="marginChart"></canvas></div>
+    </div>
+  </div>
+
+  <h3>Platform metrics by period</h3>
+  <div class="tbl-wrap" style="margin-bottom:28px">
+  <table>
+    <thead>
+      <tr>
+        <th>Period</th>
+        <th class="num-h">Revenue</th>
+        <th class="num-h">Gross margin</th>
+        <th class="num-h">Op costs</th>
+        <th class="num-h">Net loss</th>
+        <th class="num-h">Cash balance</th>
+        <th class="num-h">Customers</th>
+        <th class="num-h">Active</th>
+        <th class="num-h">Ha (cumul.)</th>
+        <th class="num-h">Datasets</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Q1 2025</td><td class="num">$8.3K</td><td class="num">$1.7K</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">44</td><td class="num">20</td><td class="num">201K</td><td class="num">7</td></tr>
+      <tr><td>Q2 2025</td><td class="num">$3.3K</td><td class="num">$0.7K</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">78</td><td class="num">23</td><td class="num">357K</td><td class="num">7</td></tr>
+      <tr><td>Q3 2025</td><td class="num">$4.9K</td><td class="num">$5.3K</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">116</td><td class="num">43</td><td class="num">13.8M</td><td class="num">19</td></tr>
+      <tr><td>Sep 2025</td><td class="num">$9.5K</td><td class="num">$4.5K</td><td class="num">$120K</td><td class="num">($112K)</td><td class="num">$1,053K</td><td class="num">116</td><td class="num">24</td><td class="num">13.8M</td><td class="num">19</td></tr>
+      <tr><td>Oct 2025</td><td class="num">$9.1K</td><td class="num">$1.4K</td><td class="num">$133K</td><td class="num">($132K)</td><td class="num">$880K</td><td class="num">135</td><td class="num">25</td><td class="num">5.70B</td><td class="num">22</td></tr>
+      <tr><td>Nov 2025</td><td class="num">$9.2K</td><td class="num">$2.6K</td><td class="num">$132K</td><td class="num">($129K)</td><td class="num">$743K</td><td class="num">156</td><td class="num">27</td><td class="num">5.71B</td><td class="num">24</td></tr>
+      <tr><td>Dec 2025</td><td class="num">$10.8K</td><td class="num">$4.6K</td><td class="num">$127K</td><td class="num">($123K)</td><td class="num">$661K</td><td class="num">162</td><td class="num">20</td><td class="num">8.54B</td><td class="num">26</td></tr>
+      <tr><td>Jan 2026</td><td class="num">$11.1K</td><td class="num">$4.3K</td><td class="num">$126K</td><td class="num">($122K)</td><td class="num">$547K</td><td class="num">177</td><td class="num">28</td><td class="num">8.99B</td><td class="num">26</td></tr>
+      <tr style="background:var(--bg2)"><td>Feb 2026 ★</td><td class="num" style="color:var(--text)">$12K</td><td class="num" style="color:var(--red)">($1K)</td><td class="num" style="color:var(--amber)">$159K*</td><td class="num" style="color:var(--red)">($160K)</td><td class="num" style="color:var(--red)">$431K</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:11px;color:var(--text3)">★ Most recent. * Feb op costs elevated by legal/tax fees associated with fundraise process. Data provider cost spike from quarterly IBAT payments.</p>
+
+  <div class="sec-divider"></div>
+
+  <h3>Amazon vs. non-Amazon usage</h3>
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Period</th><th class="num-h">Amazon ha</th><th class="num-h">Non-Amazon ha</th><th class="num-h">Amazon data reqs</th><th class="num-h">Non-Amazon reqs</th></tr></thead>
+    <tbody>
+      <tr><td>Sep 2025</td><td class="num">13.4M</td><td class="num">17K</td><td class="num">70</td><td class="num">1,714</td></tr>
+      <tr><td>Oct 2025</td><td class="num" style="color:var(--teal)">5.65B</td><td class="num">34.1M</td><td class="num" style="color:var(--teal)">7,413</td><td class="num">5,844</td></tr>
+      <tr><td>Nov 2025</td><td class="num" style="color:var(--red)">0</td><td class="num">12.7M</td><td class="num" style="color:var(--red)">0</td><td class="num">8,085</td></tr>
+      <tr><td>Dec 2025</td><td class="num">2.82B</td><td class="num">1.4M</td><td class="num">576</td><td class="num">1,152</td></tr>
+      <tr><td>Jan 2026</td><td class="num">~446M</td><td class="num">~5M</td><td class="num">—</td><td class="num">—</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p style="font-size:11px;color:var(--text3);margin-top:8px">Note: Nov 2025 Amazon zero-usage was due to primary contact relocating. She returned in December. Illustrates single-contact concentration risk within the account.</p>
+
+</div>
+</div>
+
+<!-- ────────────────── PIPELINE ────────────────── -->
+<div id="tab-pipeline" class="tab-pane">
+<div class="container">
+
+  <div class="page-title">Customer & Pipeline</div>
+  <h2>Pipeline</h2>
+  <p class="sub">Live customers, active pipeline, and data provider relationships</p>
+
+  <div class="filter-row">
+    <button class="filter-btn on" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="live">Live</button>
+    <button class="filter-btn" data-filter="pilot">Pilot</button>
+    <button class="filter-btn" data-filter="conversations">Conversations</button>
+    <button class="filter-btn" data-filter="provider">Data providers</button>
+  </div>
+
+  <div id="pipList">
+
+    <div class="pip-item" data-stage="live">
+      <div class="pip-head">
+        <div class="pip-co">Amazon</div>
+        <span class="badge b-green">Live</span>
+        <div class="pip-type">ENTERPRISE · SUPPLY CHAIN</div>
+      </div>
+      <div class="pip-body">$40K POC signed December 2025 → $60K expansion January 2026 → $100K+ total spend by March 2026, all from a single supply chain risk workflow. One power user has processed >7B ha — over half the world's land surface. Internal word spread organically to commodities, real estate, and logistics teams. Manager flagged budget for an internal app build on top of Cecil. Active backlog of 10+ datasets requested. Path to $500K by end-2026 across multiple BUs.
+        <div class="pip-quote">"I can't imagine doing this without Cecil. We need your help with waste, weather, pollution, drought." — Scientist, Amazon Science</div>
+        <div class="pip-quote">[Amazon leadership:] "saving our team months of time" previously spent sourcing data from separate providers</div>
+      </div>
+    </div>
+
+    <div class="pip-item" data-stage="live">
+      <div class="pip-head">
+        <div class="pip-co">Stantec</div>
+        <span class="badge b-green">Live</span>
+        <div class="pip-type">CONSULTANT · ENGINEERING</div>
+      </div>
+      <div class="pip-body">Engineering consultancy using Cecil to serve enterprise clients. First paid client engagement: $25K. Two more in development — Meta data centers and a utilities client. GIS team integrated ArcGIS in 2 days. Engagement lead Ashlyn is now selling location-specific work to utility and data center clients; the first time she had met the GIS team was on a call with Cecil. Illustrates the consultant-as-channel model — one relationship unlocks many end clients.</div>
+    </div>
+
+    <div class="pip-item" data-stage="pilot">
+      <div class="pip-head">
+        <div class="pip-co">ING</div>
+        <span class="badge b-blue">Pilot</span>
+        <div class="pip-type">FINANCIAL SERVICES · PORTFOLIO RISK</div>
+      </div>
+      <div class="pip-body">ING sent Cecil a consultant proposal — paid six figures for country-level risk analysis across a global asset portfolio. Their data team wanted site-level data with temporal coverage, methodology limitations, and uncertainty scores for direct model integration. This drove them to Cecil's science team. Initial pilot engagement underway. ING has a growing risk data team building their internal platform in Python — ideal Cecil integration profile.</div>
+    </div>
+
+    <div class="pip-item" data-stage="pilot">
+      <div class="pip-head">
+        <div class="pip-co">MSCI</div>
+        <span class="badge b-blue">Pilot</span>
+        <div class="pip-type">FINANCIAL DATA · ASSET RISK</div>
+      </div>
+      <div class="pip-body">3-year project to run site-level risk analysis across millions of assets. Scope includes WWF Biodiversity Risk Filter across 4M asset locations for financial institutions facing CSRD, TNFD, and SBTN reporting requirements. WWF has no API — Cecil was urgently brought into conversations by WWF to unblock MSCI and serve a broader pipeline of financial institutions with the same infrastructure gap. Morgan Stanley also accessed IBAT via Cecil but their pipeline runs 24 hours — sustainability team calls it "almost useless" without Cecil.</div>
+    </div>
+
+    <div class="pip-item" data-stage="conversations">
+      <div class="pip-head">
+        <div class="pip-co">PwC</div>
+        <span class="badge b-amber">Conversations</span>
+        <div class="pip-type">CONSULTANT · CSRD REPORTING</div>
+      </div>
+      <div class="pip-body">PwC indicated a pipeline of 100+ CSRD reports. Each implies a minimum $25K annual spend per client — making PwC a potential $2.5M+ ARR channel if deployed at scale. Pure consultant-as-channel model: one PwC relationship unlocks many corporate clients without separate enterprise sales cycles.</div>
+    </div>
+
+    <div class="pip-item" data-stage="conversations">
+      <div class="pip-head">
+        <div class="pip-co">EarthFinance</div>
+        <span class="badge b-amber">Conversations</span>
+        <div class="pip-type">CLIMATE DATA · GOVERNMENT</div>
+      </div>
+      <div class="pip-body">EarthFinance signed a multi-million dollar government contract to support daily water stress monitoring across millions of hectares. The client expects API and object storage data delivery — EarthFinance does not have this capability. Cecil has been recommended as the data delivery partner to support this project. Represents a third commercialization path: white-label infrastructure for data companies.</div>
+    </div>
+
+    <div class="pip-item" data-stage="conversations">
+      <div class="pip-head">
+        <div class="pip-co">TNFD</div>
+        <span class="badge b-amber">Conversations</span>
+        <div class="pip-type">STANDARD-SETTER · WHITE-LABEL</div>
+      </div>
+      <div class="pip-body">TNFD asked Cecil for a proposal to white-label Cecil as their official API provider. 1,200 expected market participants per TNFD's own report — each would need programmatic data access. CEO Tony Goldner met at NYC Climate Week 2025. This would be a landmark distribution partnership, making Cecil the de facto infrastructure standard for nature-related financial disclosures.</div>
+    </div>
+
+    <div class="pip-item" data-stage="conversations">
+      <div class="pip-head">
+        <div class="pip-co">Chanel / Walmart</div>
+        <span class="badge b-amber">Conversations</span>
+        <div class="pip-type">ENTERPRISE · SUPPLY CHAIN</div>
+      </div>
+      <div class="pip-body">Both cited as analogues to Amazon with similar supply chain, asset management, and physical risk functions. Same use case pattern: large volume of physical locations requiring multi-dataset risk analysis for investment and compliance decisions. No timeline shared.</div>
+    </div>
+
+    <div class="pip-item" data-stage="provider">
+      <div class="pip-head">
+        <div class="pip-co">IBAT</div>
+        <span class="badge b-purple">Data Provider</span>
+        <div class="pip-type">BIODIVERSITY DATA</div>
+      </div>
+      <div class="pip-body">Recently lost two 5-figure enterprise deals because their API couldn't handle 100K+ asset queries. Now using Cecil sales material to re-engage lost customers. Cecil is becoming the default infrastructure for distributing IBAT data to power users. Amazon was 4 months into IBAT onboarding before Cecil resolved it in minutes — billions of hectares of data delivered instantly vs. months of procurement. Data provider pull is one of Cecil's most important early moat signals.</div>
+    </div>
+
+    <div class="pip-item" data-stage="provider">
+      <div class="pip-head">
+        <div class="pip-co">WWF</div>
+        <span class="badge b-purple">Data Provider</span>
+        <div class="pip-type">BIODIVERSITY DATA</div>
+      </div>
+      <div class="pip-body">WWF cannot support MSCI's 3-year, 4M-asset project because they have no API. Came to Cecil to onboard the Biodiversity Risk Filter and unblock MSCI and the broader pipeline of financial institutions facing the same infrastructure gap. Providers coming to Cecil — not the other way around — is early evidence of platform network effects on the supply side.</div>
+    </div>
+
+    <div class="pip-item" data-stage="provider">
+      <div class="pip-head">
+        <div class="pip-co">Emmi / Sylvera</div>
+        <span class="badge b-purple">Data Provider</span>
+        <div class="pip-type">CLIMATE / CARBON</div>
+      </div>
+      <div class="pip-body">Emmi onboarded their Climate dataset onto Cecil to reach more end users and get feedback loops. Sylvera partnership announced November 2025. Data providers are coming to Cecil to modernize distribution and meter usage — Cecil's metering and tracing infrastructure solves a problem providers couldn't solve themselves.</div>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<!-- ────────────────── SCORECARD ────────────────── -->
+<div id="tab-scorecard" class="tab-pane">
+<div class="container">
+
+  <div class="page-title">Diligence Assessment</div>
+  <h2>Scorecard</h2>
+  <p class="sub">Rated 1–5 across key dimensions. Green = strong · Amber = mixed · Red = concern</p>
+
+  <div class="card" style="margin-bottom:28px">
+    <div class="score-grid">
+
+      <div class="score-row">
+        <div class="score-lbl">Market timing</div>
+        <div class="score-dots"><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div></div>
+        <div class="score-note">CSRD, EUDR, TNFD are real mandates at scale. Native spatial types confirmed in Snowflake, Databricks, BigQuery. The data team shift is validated by hyperscaler product decisions, not speculative.</div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-lbl">Mission alignment</div>
+        <div class="score-dots"><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div></div>
+        <div class="score-note">Infrastructure enabling better climate, nature, and supply chain decisions at planetary scale. Deeply on-thesis for Collaborative Fund across climate, nature, and sustainable capital allocation.</div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-lbl">Team</div>
+        <div class="score-dots"><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot"></div></div>
+        <div class="score-note">Strong founder-market fit. PhD-level science depth (ETH Zürich, NASA, Stanford) is a genuine differentiator — actively publishing on geospatial ontology. BCG, Thoughtworks, TPG pedigree. Missing a dedicated enterprise sales hire; Alex is carrying all commercial motion.</div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-lbl">Customer traction</div>
+        <div class="score-dots"><div class="dot g"></div><div class="dot g"></div><div class="dot g"></div><div class="dot a"></div><div class="dot"></div></div>
+        <div class="score-note">Amazon is genuine and fast — $100K in 3 months, strong NPS quotes, organic internal spread across BUs. But nearly all meaningful revenue is one account. November 2025 showed how fragile that is: one contact relocated and usage dropped to zero. Pipeline is real but early-stage with no signed follow-on enterprise contracts yet.</div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-lbl">Competitive moat</div>
+        <div class="score-dots"><div class="dot g"></div><div class="dot g"></div><div class="dot a"></div><div class="dot"></div><div class="dot"></div></div>
+        <div class="score-note">Ontology/context layer is novel and the right long-term bet for AI-native infrastructure. Data providers actively coming to Cecil (IBAT, WWF) is early evidence of supply-side network effects. But moat is unproven vs. hyperscalers (AWS, Snowflake) who are adjacent and have distribution at scale. The key question: how durable is the context layer before it gets commoditized?</div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-lbl">Go-to-market</div>
+        <div class="score-dots"><div class="dot g"></div><div class="dot g"></div><div class="dot a"></div><div class="dot"></div><div class="dot"></div></div>
+        <div class="score-note">Bottom-up PLG for data teams is the right motion — fits how Cecil gets embedded (SDK, notebooks, production pipelines). Consultant channel (Stantec → PwC) is a clever one-to-many funnel. But no repeatable enterprise sales motion yet, cycles are long, and Q4 2025 revenue targets were all missed despite strong usage growth.</div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-lbl">Revenue quality</div>
+        <div class="score-dots"><div class="dot g"></div><div class="dot a"></div><div class="dot a"></div><div class="dot"></div><div class="dot"></div></div>
+        <div class="score-note">Usage-based model is directionally correct for infrastructure. But $12K/month is small, Amazon is ~80%+ of Q4 meaningful revenue, and gross margins are structurally constrained by data provider pass-through costs (~35–45%). Long-term margin expansion requires platform fee dominance — not yet demonstrated.</div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-lbl alert">Financial position</div>
+        <div class="score-dots"><div class="dot r"></div><div class="dot r"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+        <div class="score-note">$431K cash at ~$125K/month burn = ~3.5 months runway. Fundraise is active and appears to be gaining traction. But any deal slippage or timeline extension is existential. February 2026 showed cost volatility — $160K net loss from legal and tax fees tied to fundraise preparation.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Open questions -->
+  <h3>Key diligence questions</h3>
+  <div class="card">
+    <div class="tbl-wrap">
+    <table class="q-table">
+      <thead><tr><th>Theme</th><th>Question</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>Moat</td><td style="color:var(--text2)">What is the switching cost for Amazon once Cecil is embedded in production? Could IBAT or WWF replicate this capability if they invested in API infrastructure in 2–3 years?</td><td><span class="badge b-red">High</span></td></tr>
+        <tr><td>Unit economics</td><td style="color:var(--text2)">Blended GM disaggregated by platform fee vs. data pass-through? What does a $500K ARR account look like structurally at maturity?</td><td><span class="badge b-red">High</span></td></tr>
+        <tr><td>Pipeline stage</td><td style="color:var(--text2)">ING, MSCI, PwC — signed LOIs, active pilots, or early conversations? What are expected close timelines and deal sizes?</td><td><span class="badge b-red">High</span></td></tr>
+        <tr><td>Amazon path</td><td style="color:var(--text2)">Is the $500K path dependent on a top-down enterprise agreement or continued bottom-up BU expansion? How many BUs are actively trialing today?</td><td><span class="badge b-red">High</span></td></tr>
+        <tr><td>Context layer</td><td style="color:var(--text2)">How mature is the ontology product — shippable feature or research project? What does an AI agent calling the Cecil API actually receive as structured context?</td><td><span class="badge b-amber">Medium</span></td></tr>
+        <tr><td>Provider risk</td><td style="color:var(--text2)">What happens to Cecil's value prop if IBAT/WWF build their own APIs in 2–3 years? Is there a contractual lock-in or distribution exclusivity?</td><td><span class="badge b-amber">Medium</span></td></tr>
+        <tr><td>Fundraise</td><td style="color:var(--text2)">Target raise size, valuation, use of proceeds? Who else is in the round, and what is the timeline to close?</td><td><span class="badge b-amber">Medium</span></td></tr>
+        <tr><td>Sales motion</td><td style="color:var(--text2)">Is there a plan to hire a dedicated enterprise sales lead? What does the current sales process look like — who owns it and what's the average cycle time?</td><td><span class="badge b-amber">Medium</span></td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ────────────────── RISK REGISTER ────────────────── -->
+<div id="tab-risks" class="tab-pane">
+<div class="container">
+
+  <div class="page-title">Risk Assessment</div>
+  <h2>Risk Register</h2>
+  <p class="sub">Click any risk to expand detail. Severity reflects current diligence state — may update with further information.</p>
+
+  <div class="risk-grid">
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <div class="risk-sev high"></div>
+        <div class="risk-title">Customer concentration — Amazon is ~80%+ of meaningful revenue</div>
+        <div class="risk-meta">
+          <span class="impact-pill ip-high">SEVERITY: HIGH</span>
+          <span class="impact-pill ip-high">IMPACT: EXISTENTIAL</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <p>Amazon is the only customer generating material revenue. This was demonstrated vividly in November 2025 — Cecil's primary Amazon contact relocated, usage dropped to exactly zero for the entire month, and revenue held flat only because of minimum fees. One departure or re-prioritization at Amazon could eliminate 80%+ of revenue overnight.</p>
+        <br><p><strong>The $500K Amazon path is not contracted.</strong> It requires organic expansion across multiple BUs (commodities, real estate, logistics) that have expressed interest but have not signed. Each BU expansion is a separate sales process inside a large enterprise with its own procurement timeline.</p>
+        <br><p><strong>Mitigants:</strong> Multiple Amazon teams are already using the platform organically (the Landbanking group, Taking Root, sustainability team). Amazon leadership has flagged budget for an internal app build. The product's Python SDK integration makes it sticky once embedded. But these are not contractual mitigants.</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <div class="risk-sev high"></div>
+        <div class="risk-title">Runway — ~3.5 months of cash at current burn rate</div>
+        <div class="risk-meta">
+          <span class="impact-pill ip-high">SEVERITY: HIGH</span>
+          <span class="impact-pill ip-high">IMPACT: EXISTENTIAL</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <p>$431K cash as of February 2026, with a burn rate of approximately $120–125K/month (Feb was elevated at $160K due to legal/tax fees). This gives roughly 3.5 months of runway — a very tight window.</p>
+        <br><p>The fundraise has launched (8+ meetings in the first week per Alex's March 2026 update) and appears to be gaining traction, but venture rounds can slip. Any deal taking 4+ months to close — not unusual for a seed round — could require bridge financing or operational cuts.</p>
+        <br><p><strong>Mitigants:</strong> The team has demonstrated willingness to cut costs (let go of one hire in November 2025). There is also the possibility of a near-term Amazon enterprise agreement that would provide a significant cash injection. The fundraise is clearly the priority.</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <div class="risk-sev med"></div>
+        <div class="risk-title">Platform vs. broker — is this durable infrastructure or a sophisticated middleman?</div>
+        <div class="risk-meta">
+          <span class="impact-pill ip-med">SEVERITY: MEDIUM</span>
+          <span class="impact-pill ip-high">IMPACT: HIGH</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <p>The central long-term question for Cecil. Right now, Cecil's value is partly brokerage: it aggregates datasets, handles licensing, normalizes formats, and provides a unified API. This is genuinely valuable — but it's replicable in 2–3 years if data providers invest in their own API infrastructure, or if a hyperscaler (AWS, Snowflake, Google Cloud) builds a native spatial data marketplace.</p>
+        <br><p>The ontology/context layer is Cecil's claim to durable defensibility: a shared scientific context layer that makes datasets interoperable and makes AI workloads reliable. This is harder to replicate because it requires deep domain expertise (Tom Walker's PhD-level science team), active research collaboration, and community/standard-setting influence.</p>
+        <br><p><strong>Key questions to probe:</strong> How mature is the ontology product today? Is it a shippable API feature or research work? What does Cecil's API response actually include in terms of structured scientific context? Are there any contractual relationships with data providers that create exclusivity or lock-in?</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <div class="risk-sev med"></div>
+        <div class="risk-title">Gross margin structure — data pass-through constrains economics</div>
+        <div class="risk-meta">
+          <span class="impact-pill ip-med">SEVERITY: MEDIUM</span>
+          <span class="impact-pill ip-med">IMPACT: MEDIUM</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <p>Current blended gross margins are approximately 35–45%, structurally constrained by data provider costs that are largely pass-through. In February 2026, gross margin was actually negative ($12K revenue, $13K cost of sales) because of a quarterly IBAT payment landing in the month.</p>
+        <br><p>The long-term margin story requires the platform fee (compute/API credits) and the context layer to become the dominant revenue driver. Data acquisition fees are a commodity moat — Cecil can charge modest margin on licensing and format normalization, but providers can always choose to go direct.</p>
+        <br><p><strong>Mitigants:</strong> Platform fee as a % of total revenue has been growing (from zero in Q2 2025 to $5.8K in Jan 2026). Usage-based pricing means that as usage scales exponentially (Amazon-style), the platform fee grows much faster than data costs. The path to SaaS-like margins exists; it's just not demonstrated yet.</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <div class="risk-sev med"></div>
+        <div class="risk-title">Sales motion — no repeatable enterprise GTM yet</div>
+        <div class="risk-meta">
+          <span class="impact-pill ip-med">SEVERITY: MEDIUM</span>
+          <span class="impact-pill ip-med">IMPACT: MEDIUM</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <p>Cecil missed all three Q4 2025 revenue targets (100K data requests, $2.5M invoice, $500K Cecil revenue) despite enormous usage growth. The team explicitly acknowledged in the October update that they are "still learning the sales cycle."</p>
+        <br><p>Alex is currently running the entire commercial motion himself, supported by Connor Jordan in RevOps. Enterprise sales into Amazon, ING, MSCI, and PwC each requires a different buyer type (sustainability teams, data teams, procurement, compliance) and a different sales narrative. Without a dedicated enterprise sales leader, close rates and cycles will be inconsistent.</p>
+        <br><p><strong>Mitigants:</strong> The consultant channel (Stantec, PwC) may be the unlock — each consultant relationship multiplies into many client relationships without needing separate enterprise sales motions. The product's bottom-up PLG nature means Cecil can get embedded at the data team level before ever needing to sell top-down.</p>
+      </div>
+    </div>
+
+    <div class="risk-item">
+      <div class="risk-header" onclick="toggleRisk(this)">
+        <div class="risk-sev low"></div>
+        <div class="risk-title">Competitive displacement — Esri, AWS, or a well-funded startup</div>
+        <div class="risk-meta">
+          <span class="impact-pill ip-med">SEVERITY: LOW-MEDIUM</span>
+          <span class="impact-pill ip-med">IMPACT: HIGH</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="risk-body">
+        <p>Esri has 10M+ users and 700K+ customers — but it is built for a different buyer (GIS specialists, not data teams) and delivers data as reports and dashboards, not APIs. The incumbent moat is in the specialist workflow, not the production pipeline workflow Cecil is targeting.</p>
+        <br><p>Planet and Maxar are image providers, not infrastructure. They are more likely to be data providers on Cecil than competitors. AWS has data exchange products but has not built a spatial data context layer or ontology product.</p>
+        <br><p>The real competitive risk is a well-funded startup (with $5–20M) choosing to build in this space, or a hyperscaler deciding to build a native spatial data marketplace with their own licensing agreements. Neither has moved meaningfully as of April 2026.</p>
+        <br><p><strong>Mitigants:</strong> Cecil's scientific depth and the active research publishing creates a credibility moat with data providers. Being embedded in Amazon's production pipeline creates switching cost. But the window to establish this moat is not unlimited.</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<!-- ────────────────── UPDATES ────────────────── -->
+<div id="tab-updates" class="tab-pane">
+<div class="container">
+
+  <div class="page-title">Investor Update Log</div>
+  <h2>Monthly Updates</h2>
+  <p class="sub">Updates from Alex Logan to Craig Wilson, Sep 2025 – Mar 2026</p>
+
+  <div class="timeline">
+
+    <div class="tl-item">
+      <div class="tl-date">14 MAR 2026</div>
+      <div class="tl-title">Amazon >$100K · Seed fundraise launched</div>
+      <div class="tl-body">60K expansion signed and additional purchase in contracting — Amazon crosses $100K lifetime spend. Seed fundraise officially kicked off with 8 meetings in first week, starting with smaller funds to iterate. Revenue $12K but op costs elevated at $159K (legal/tax), resulting in ($160K) net loss. Cash $431K. ~3.5 months runway.</div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date">11 FEB 2026</div>
+      <div class="tl-title">Amazon $60K in contracting · Full metrics table shared for first time</div>
+      <div class="tl-body">Amazon in contracting for additional $60K — bringing total to ~$100K since Q4 adoption. First time full customer/platform metrics table was shared: 177 customers, 28 active, 9B+ ha cumulative. Revenue $11K, gross margin $4K, cash $547K. ING and PwC cited as enterprise pipeline.</div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date">11 JAN 2026</div>
+      <div class="tl-title">Q4 recap: 8.5B ha · 27K subscriptions · Revenue goals missed</div>
+      <div class="tl-body">Ended Q4 on a strong usage note but missed all three revenue targets (100K data requests, $2.5M invoice, $500K revenue). 2/5 Q4 goals achieved — both were usage targets. Amazon Q1 2026 plan: (1) expand users, (2) move toward system integration, (3) larger commercial agreement. Cash $661K. Team at 9 people.</div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date">10 DEC 2025</div>
+      <div class="tl-title">November: 5.71B ha cumulative · Amazon zero-usage month</div>
+      <div class="tl-body">Amazon power user relocated — November usage dropped to zero. Non-Amazon data requests grew (8,085 vs. 5,844 in Oct). Revenue still $9K on minimum fees. EarthFinance and Amazon expansion as near-term revenue catalysts. Cash $743K. One hire (Joao Melo, product) let go to manage burn.</div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date">10 NOV 2025</div>
+      <div class="tl-title">October: Amazon goes live at scale — 5.7B ha in a single month · TNFD opportunity</div>
+      <div class="tl-body">Amazon processed 5.7B ha in October alone (5.65B vector + 2.2B raster, some overlap). 6% of world's land surface processed all-time. Consultancy channel emerging — Stantec, Quantis (BCG-owned), PwC all resonating. TNFD white-label proposal requested. CEO Tony Goldner met at NYC Climate Week. Cash $880K.</div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-date">10 OCT 2025</div>
+      <div class="tl-title">September: Amazon live · NYC Climate Week · +13M ha</div>
+      <div class="tl-body">Amazon had $30K Q4 budget; "saving months of time" from sustainability leadership. Landbanking and Taking Root driving daily requests. TNFD white-label proposal requested. Revenue $9K (includes $25K Amazon license). Cash $1.05M (R&D tax credit of $343K received). Q4 goals set: 1B ha vector, 500M raster, 100K data requests, $2.5M invoice, $500K Cecil revenue.</div>
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<!-- ────────────────── MEMO ────────────────── -->
+<div id="tab-memo" class="tab-pane">
+<div class="memo-shell">
+
+  <div class="memo-header">
+    <div class="memo-co">Cecil</div>
+    <div class="memo-tag">INVESTMENT MEMO · COLLABORATIVE FUND · APRIL 2026</div>
+    <div class="memo-meta-grid">
+      <div class="meta-key">Stage</div><div class="meta-val">Seed</div>
+      <div class="meta-key">Category</div><div class="meta-val">Spatial data infrastructure · AI context layer</div>
+      <div class="meta-key">Status</div><div class="meta-val">Reviewing · Fundraise active</div>
+      <div class="meta-key">Website</div><div class="meta-val">cecil.earth</div>
+      <div class="meta-key">Contact</div><div class="meta-val">Alex Logan, CEO — alex@cecil.earth</div>
+      <div class="meta-key">Reviewer</div><div class="meta-val">Craig W., Collaborative Fund</div>
+    </div>
+  </div>
+
+  <div class="memo-section">
+    <div class="memo-h">Executive Summary</div>
+    <div class="memo-p">Cecil is building the infrastructure layer between fragmented spatial data providers and a growing class of enterprise users who need that data to power high-stakes, location-specific decisions. The product is a data marketplace and unified API platform that wraps datasets — land use, flood risk, biodiversity, water stress, satellite imagery — previously siloed in specialist GIS tools or buried behind complex licensing negotiations, into a standardized Python SDK and API that fits directly into data team notebooks and production pipelines.</div>
+    <div class="memo-p">The company launched its first enterprise customer (Amazon) in Q4 2025 and reached $100K+ in spend within three months — all from a single supply chain risk workflow. One power user has processed over seven billion hectares of data — more than half the world's land surface. Internal word spread organically to multiple Amazon business units. The pipeline beyond Amazon includes ING (pilot underway), MSCI (urgent need to unblock a 3-year project), PwC (100+ CSRD reports), EarthFinance (government data delivery contract), and TNFD (white-label API partnership proposal).</div>
+    <div class="memo-p"><strong>We recommend proceeding to full diligence</strong> and prioritizing a call with Alex Logan. The fundraise is active and moving quickly.</div>
+  </div>
+
+  <div class="memo-section">
+    <div class="memo-h">Why This Fits Collaborative Fund</div>
+    <div class="memo-p">Cecil sits at the intersection of three Collab theses: climate resilience infrastructure, nature and biodiversity data, and enabling better decision-making at the systems level. The use cases being unlocked are precisely the decisions that matter most — data center site selection for climate resilience, supply chain deforestation compliance (EUDR), financial portfolio physical risk (CSRD, TNFD), biodiversity impact at asset level (SBTN). Cecil is not a climate application; it is the infrastructure layer that makes these applications possible at scale.</div>
+    <div class="memo-p">The mission alignment is unusually clean. Cecil's context layer and scientific rigor — co-publishing "Candid Cartography" on the importance of exposing dataset assumptions — reflects a philosophy that physical-world data should be used honestly and transparently. That is not marketing language; it is Tom Walker's research program.</div>
+  </div>
+
+  <div class="memo-section">
+    <div class="memo-h">The Problem</div>
+    <div class="memo-p"><strong>For enterprises:</strong> Amazon historically took six months to integrate a new dataset. They were four months into IBAT onboarding when they found Cecil — and got billions of hectares of IBAT data within minutes. Morgan Stanley built their own IBAT integration; it takes 24 hours to run, which the sustainability team says makes the data "almost useless." ING paid a consultant six figures for physical risk analysis; the output was country-level aggregates. ING's data team wanted site-level data with temporal coverage, methodology limitations, and uncertainty scores for direct model integration.</div>
+    <div class="memo-p"><strong>For data providers:</strong> IBAT recently lost two 5-figure enterprise deals because their API couldn't handle 100K+ asset queries. WWF cannot support MSCI's 3-year, 4M-asset-location project — no API. EarthFinance signed a multi-million dollar government contract requiring daily API delivery — they don't have that infrastructure. These providers are coming to Cecil to modernize distribution. The supply-side pull is one of Cecil's most important early moat signals.</div>
+    <div class="memo-p"><strong>For AI:</strong> Spatial datasets disagree fundamentally. Global urban maps differ four-fold on how much of Earth is urban. Forest models have only 26% overlap in defined forest area. Rainfall datasets disagree on whether precipitation helps or harms crop yields. An AI agent misestimated a carbon project by 10x because it relied on ungrounded satellite interpretations instead of a consistent ecological ontology. Cecil's scientific context layer — the metadata, variable definitions, methodology limitations, and ontology — is what makes agentic spatial workflows reliable.</div>
+  </div>
+
+  <div class="memo-section">
+    <div class="memo-h">Business Model</div>
+    <div class="memo-p">Usage-based pricing with two revenue streams: <strong>data acquisition fees</strong> (licensing pass-through + margin, e.g. IBAT access) and <strong>platform fees</strong> (compute/API credits for processing). Moving toward a paid membership tier for smaller accounts. Gross margins today are approximately 35–45%, structurally constrained by data provider costs. The long-term margin story requires the platform fee and context layer to become the dominant revenue driver — not demonstrated yet, but platform fee has grown from zero (Q2 2025) to $5.8K/month (Jan 2026).</div>
+    <div class="memo-p">The AlphaSense analogy holds: AlphaSense started as a research tool for financial data, embedded into enterprise workflows via API, and grew into a $500M ARR platform used by 6,500+ customers. Cecil is making the same bet on spatial/physical-world data — with the added tailwind that AI agents urgently need the context layer Cecil is building.</div>
+  </div>
+
+  <div class="memo-section">
+    <div class="memo-h">Key Risks</div>
+    <div class="memo-p"><strong>Customer concentration (High):</strong> Amazon is ~80%+ of meaningful revenue. November 2025 showed the fragility — one contact relocated and usage dropped to zero for the month. The $500K Amazon projection requires multiple BU expansions not yet contracted.</div>
+    <div class="memo-p"><strong>Runway (High):</strong> ~3.5 months of cash at current burn. Fundraise is active but any slippage is existential.</div>
+    <div class="memo-p"><strong>Platform vs. broker (Medium):</strong> If IBAT/WWF build their own APIs, or if AWS/Snowflake builds a native spatial marketplace, Cecil's position weakens. The ontology/context layer is the key differentiator to pressure-test.</div>
+    <div class="memo-p"><strong>Gross margin structure (Medium):</strong> Data pass-through keeps margins at 35–45%. Platform fee dominance is the long-term margin path — not yet demonstrated.</div>
+    <div class="memo-p"><strong>Sales motion (Medium):</strong> All Q4 2025 revenue targets missed. Team is still "learning the sales cycle." No dedicated enterprise sales hire yet.</div>
+  </div>
+
+  <div class="memo-section">
+    <div class="memo-h">Open Diligence Questions</div>
+    <div class="tbl-wrap">
+    <table class="q-table">
+      <tbody>
+        <tr><td>Moat</td><td style="color:var(--text2)">Switching cost for Amazon once embedded in production? Provider lock-in or exclusivity?</td></tr>
+        <tr><td>Unit econ</td><td style="color:var(--text2)">Blended GM by platform fee vs. data pass-through? Mature account unit economics at $500K ARR?</td></tr>
+        <tr><td>Pipeline</td><td style="color:var(--text2)">ING, MSCI, PwC — LOIs, active pilots, or conversations? Close timelines and deal sizes?</td></tr>
+        <tr><td>Amazon</td><td style="color:var(--text2)">$500K path via top-down enterprise deal or bottom-up? How many BUs are actively trialing?</td></tr>
+        <tr><td>Context layer</td><td style="color:var(--text2)">Maturity of ontology product — shippable or research? What does an agent receive when calling the API?</td></tr>
+        <tr><td>Fundraise</td><td style="color:var(--text2)">Target raise size, valuation, use of proceeds, other investors in round?</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+</div>
+</div>
+
+</main>
+</div>
+
+<script>
+// ── TAB NAVIGATION ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + target).classList.add('active');
+    if (target === 'metrics') buildMetricCharts();
+  });
+});
+
+// ── PIPELINE FILTER ──
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const f = btn.dataset.filter;
+    document.querySelectorAll('.pip-item').forEach(item => {
+      item.style.display = (f === 'all' || item.dataset.stage === f) ? 'block' : 'none';
+    });
+  });
+});
+
+// ── RISK TOGGLE ──
+function toggleRisk(header) {
+  const body = header.nextElementSibling;
+  const chevron = header.querySelector('.chevron');
+  body.classList.toggle('open');
+  chevron.textContent = body.classList.contains('open') ? '▲' : '▼';
+}
+
+// ── CHART CONFIG ──
+const gridColor = 'rgba(255,255,255,0.05)';
+const tickColor = 'rgba(255,255,255,0.25)';
+const teal = '#1fba8a';
+const amber = '#e0a040';
+const blue = '#5b9cf6';
+const red = '#e05555';
+
+function baseOpts(yCallback) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1c1e21', titleColor: '#e8e6e0', bodyColor: '#9a9790', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 } },
+    scales: {
+      x: { ticks: { color: tickColor, font: { size: 11, family: 'DM Mono' } }, grid: { color: gridColor } },
+      y: { ticks: { color: tickColor, font: { size: 11, family: 'DM Mono' }, callback: yCallback }, grid: { color: gridColor }, beginAtZero: true }
+    }
+  };
+}
+
+// ── OVERVIEW CHARTS ──
+let overviewBuilt = false;
+
+// ── METRICS CHARTS ──
+let metricsBuilt = false;
+function buildMetricCharts() {
+  if (metricsBuilt) return;
+  metricsBuilt = true;
+
+  const labels = ["Q1'25","Q2'25","Q3'25","Sep","Oct","Nov","Dec","Jan'26"];
+  const total  = [44, 78, 116, 116, 135, 156, 162, 177];
+  const active = [20, 23,  43,  24,  25,  27,  20,  28];
+
+  new Chart(document.getElementById('custChart'), {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: 'Total', data: total, borderColor: blue, backgroundColor: blue + '10', fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: blue },
+      { label: 'Active', data: active, borderColor: amber, backgroundColor: 'transparent', tension: 0.4, pointRadius: 3, pointBackgroundColor: amber, borderDash: [4,3] }
+    ]},
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: tickColor, font: { size: 11 }, boxWidth: 12 } }, tooltip: { backgroundColor: '#1c1e21', titleColor: '#e8e6e0', bodyColor: '#9a9790', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 } }, scales: { x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor } }, y: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor }, beginAtZero: true } } }
+  });
+
+  const marginLabels = ['Sep','Oct','Nov','Dec','Jan','Feb'];
+  const marginData   = [4.5, 1.4, 2.6, 4.6, 4.3, -1];
+  const mColors = marginData.map(v => v < 0 ? red + '90' : teal + '80');
+  const mBorder = marginData.map(v => v < 0 ? red : teal);
+  new Chart(document.getElementById('marginChart'), {
+    type: 'bar',
+    data: { labels: marginLabels, datasets: [{ data: marginData, backgroundColor: mColors, borderColor: mBorder, borderWidth: 1, borderRadius: 3 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' $' + ctx.parsed.y.toFixed(1) + 'K' }, backgroundColor: '#1c1e21', titleColor: '#e8e6e0', bodyColor: '#9a9790', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 } }, scales: { x: { ticks: { color: tickColor, font: { size: 11 } }, grid: { color: gridColor } }, y: { ticks: { color: tickColor, font: { size: 11 }, callback: v => '$' + v + 'K' }, grid: { color: gridColor } } } }
+  });
+}
+
+// Build overview charts on load — light background
+function buildOverviewCharts() {
+  if (overviewBuilt) return;
+  overviewBuilt = true;
+
+  const lgrid = 'rgba(0,0,0,0.06)';
+  const ltick = 'rgba(0,0,0,0.3)';
+
+  const haLabels = ["Q1'25","Q2'25","Q3'25","Sep","Oct","Nov","Dec","Jan'26"];
+  const haData   = [0.000201, 0.000357, 13.8, 13.8, 5700, 5712, 8539, 8990];
+  new Chart(document.getElementById('haChart'), {
+    type: 'bar',
+    data: { labels: haLabels, datasets: [{ data: haData, backgroundColor: '#1fba8a80', borderColor: '#1fba8a', borderWidth: 1, borderRadius: 3 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', titleColor: '#1a1917', bodyColor: '#6a6864', borderColor: '#e4e2dc', borderWidth: 1, callbacks: { label: ctx => { const v = ctx.parsed.y; return ' ' + (v >= 1000 ? (v/1000).toFixed(1)+'B' : v < 1 ? (v*1000000).toFixed(0)+'K' : v.toFixed(1)+'M') + ' ha'; } } } }, scales: { x: { ticks: { color: ltick, font: { size: 11 } }, grid: { color: lgrid } }, y: { ticks: { color: ltick, font: { size: 11 }, callback: v => v >= 1000 ? (v/1000).toFixed(0)+'B' : v+'M' }, grid: { color: lgrid }, beginAtZero: true } } }
+  });
+
+  const revLabels = ['Sep','Oct','Nov','Dec','Jan','Feb'];
+  const revData = [9.5, 9.1, 9.2, 10.8, 11.1, 12];
+  new Chart(document.getElementById('revChart'), {
+    type: 'line',
+    data: { labels: revLabels, datasets: [{ data: revData, borderColor: '#1fba8a', backgroundColor: '#1fba8a18', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#1fba8a', pointBorderColor: '#fff', pointBorderWidth: 2 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', titleColor: '#1a1917', bodyColor: '#6a6864', borderColor: '#e4e2dc', borderWidth: 1, callbacks: { label: ctx => ' $' + ctx.parsed.y + 'K' } } }, scales: { x: { ticks: { color: ltick, font: { size: 11 } }, grid: { color: lgrid } }, y: { ticks: { color: ltick, font: { size: 11 }, callback: v => '$' + v + 'K' }, grid: { color: lgrid }, beginAtZero: true } } }
+  });
+}
+
+setTimeout(buildOverviewCharts, 100);
+</script>
+</body>
+</html>
